@@ -1,5 +1,3 @@
-
-
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -19,8 +17,55 @@
 
       try {
         // Replace the link below with your published CSV link
-        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTHueh6aJe84zabgRcUtkC0TuHek2zba1Rj_1V7jWM4hp-iEZCl1ZFkNckcFONjIdi2hR4Ike2xXQTt/pub?output=csv"; 
-        // e.g., "https://docs.google.com/spreadsheets/d/1AbC123/pub?output=csv"
+        const csvUrl = "YOUR_CSV_LINK"; 
+        // e.g., "https://docs.google.com/spreadsheets/d/1HaZ13RLpXNKn6JHtz-alICMrc3S6YfAS9m_wjlZVx7Y/pub?output=csv"
+
+        // 1. Fetch the CSV text
+        const response = await fetch(csvUrl);
+        if (!response.ok) {
+          throw new Error("Network response was not ok: " + response.status);
+        }
+        const csvText = await response.text();
+
+        // 2. Parse using PapaParse
+        const parsed = Papa.parse(csvText, { 
+          header: true,     // Assumes first row has column headers
+          skipEmptyLines: true
+        });
+        const rows = parsed.data;
+
+        // 3. Display the parsed data in <pre>
+        console.log("Parsed Data:", rows);
+        output.textContent = JSON.stringify(rows, null, 2);
+
+      } catch (error) {
+        output.textContent = "Error: " + error.message;
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CSV Fetch Example</title>
+  <!-- Load PapaParse from a CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+  <h1>Load CSV from Published Google Sheet</h1>
+  <button onclick="loadCsv()">Fetch Data</button>
+  <pre id="output">Click "Fetch Data" to load.</pre>
+
+  <script>
+    async function loadCsv() {
+      const output = document.getElementById("output");
+      output.textContent = "Loading...";
+
+      try {
+        // Replace the link below with your published CSV link
+        const csvUrl = "YOUR_CSV_LINK"; 
+        // e.g., "https://docs.google.com/spreadsheets/d/1HaZ13RLpXNKn6JHtz-alICMrc3S6YfAS9m_wjlZVx7Y/pub?output=csv"
 
         // 1. Fetch the CSV text
         const response = await fetch(csvUrl);
@@ -48,7 +93,6 @@
   </script>
 </body>
 </html>
-  </script>
 </body>
 </html>
 </html>
