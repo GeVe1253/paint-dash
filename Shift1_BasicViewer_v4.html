@@ -1,55 +1,54 @@
+
+
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Direct JSON Fetch from Google Sheets</title>
+  <title>CSV Fetch Example</title>
+  <!-- Load PapaParse from a CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 </head>
 <body>
-  <h1>Fetch JSON from Published Google Sheets</h1>
-  <button onclick="fetchJson()">Fetch Data</button>
-  <pre id="output">Click "Fetch Data" to load the sheet.</pre>
+  <h1>Load CSV from Published Google Sheet</h1>
+  <button onclick="loadCsv()">Fetch Data</button>
+  <pre id="output">Click "Fetch Data" to load.</pre>
 
   <script>
-    async function fetchJson() {
-      // Show a loading message
-      document.getElementById('output').textContent = "Loading...";
-
-      // Replace with your published Google Sheet ID
-      const sheetId = "1HaZ13RLpXNKn6JHtz-alICMrc3S6YfAS9m_wjlZVx7Y";  // e.g. "1ExampleAbC123"
-      // If your data is in the first tab, use 1. Second tab => 2, etc.
-      const tabNumber = 1; 
-
-      // Construct the older feed URL for JSON
-      const url = `https://spreadsheets.google.com/feeds/list/${sheetId}/${tabNumber}/public/values?alt=json`;
+    async function loadCsv() {
+      const output = document.getElementById("output");
+      output.textContent = "Loading...";
 
       try {
-        const response = await fetch(url);
+        // Replace the link below with your published CSV link
+        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTHueh6aJe84zabgRcUtkC0TuHek2zba1Rj_1V7jWM4hp-iEZCl1ZFkNckcFONjIdi2hR4Ike2xXQTt/pub?output=csv"; 
+        // e.g., "https://docs.google.com/spreadsheets/d/1AbC123/pub?output=csv"
+
+        // 1. Fetch the CSV text
+        const response = await fetch(csvUrl);
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error("Network response was not ok: " + response.status);
         }
-        const jsonData = await response.json();
+        const csvText = await response.text();
 
-        // Google Sheets returns row data in jsonData.feed.entry[]
-        const entries = jsonData.feed.entry || [];
-
-        // Convert each row from the "gsx$..." format to a simpler object
-        const rows = entries.map(entry => {
-          const rowObj = {};
-          for (let key in entry) {
-            if (key.startsWith("gsx$")) {
-              // Example key: "gsx$name" -> property = "name"
-              const propertyName = key.substring(4);
-              rowObj[propertyName] = entry[key].$t; // The cell value
-            }
-          }
-          return rowObj;
+        // 2. Parse using PapaParse
+        const parsed = Papa.parse(csvText, { 
+          header: true,     // Assumes first row has column headers
+          skipEmptyLines: true
         });
+        const rows = parsed.data;
 
-        // Display the array of row objects
-        document.getElementById('output').textContent = JSON.stringify(rows, null, 2);
+        // 3. Display the parsed data in <pre>
+        console.log("Parsed Data:", rows);
+        output.textContent = JSON.stringify(rows, null, 2);
+
       } catch (error) {
-        document.getElementById('output').textContent = "Error: " + error.message;
+        output.textContent = "Error: " + error.message;
+        console.error(error);
       }
     }
+  </script>
+</body>
+</html>
   </script>
 </body>
 </html>
