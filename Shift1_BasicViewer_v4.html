@@ -1,111 +1,56 @@
+
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Первая Смена</title>
+  <title>CSV Fetch Example</title>
   <!-- Load PapaParse from a CDN -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    button {
-      padding: 10px 15px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-    table {
-      margin-top: 20px;
-      border-collapse: collapse;
-      width: 100%;
-      max-width: 800px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px 12px;
-      text-align: left;
-    }
-    th {
-      background-color: #f0f0f0;
-    }
-  </style>
 </head>
 <body>
   <h1>Load CSV from Published Google Sheet</h1>
   <button onclick="loadCsv()">Fetch Data</button>
-
-  <!-- Table for displaying parsed CSV -->
-  <table>
-    <thead id="table-head"></thead>
-    <tbody id="table-body"></tbody>
-  </table>
+  <pre id="output">Click "Fetch Data" to load.</pre>
 
   <script>
     async function loadCsv() {
-      // Replace this with your actual published CSV link (File → Publish to the web → CSV)
-      const csvUrl = "1HaZ13RLpXNKn6JHtz-alICMrc3S6YfAS9m_wjlZVx7Y"; 
-      // Example: "https://docs.google.com/spreadsheets/d/1AbC123/pub?output=csv"
-
-      // Clear any existing table content
-      document.getElementById("table-head").innerHTML = "";
-      document.getElementById("table-body").innerHTML = "";
+      const output = document.getElementById("output");
+      output.textContent = "Loading...";
 
       try {
+        // Replace the link below with your published CSV link
+        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTHueh6aJe84zabgRcUtkC0TuHek2zba1Rj_1V7jWM4hp-iEZCl1ZFkNckcFONjIdi2hR4Ike2xXQTt/pub?output=csv"; 
+        // e.g., "https://docs.google.com/spreadsheets/d/1AbC123/pub?output=csv"
+
+        // 1. Fetch the CSV text
         const response = await fetch(csvUrl);
         if (!response.ok) {
           throw new Error("Network response was not ok: " + response.status);
         }
         const csvText = await response.text();
 
-        // Parse CSV text using PapaParse
-        const parsed = Papa.parse(csvText, {
-          header: true,      // First row is column headers
+        // 2. Parse using PapaParse
+        const parsed = Papa.parse(csvText, { 
+          header: true,     // Assumes first row has column headers
           skipEmptyLines: true
         });
-        const rows = parsed.data; // An array of objects, each object = a row
+        const rows = parsed.data;
 
-        if (rows.length === 0) {
-          alert("No rows found. Make sure your sheet has data.");
-          return;
-        }
+        // 3. Display the parsed data in <pre>
+        console.log("Parsed Data:", rows);
+        output.textContent = JSON.stringify(rows, null, 2);
 
-        // Build the table
-        buildTable(rows);
       } catch (error) {
-        alert("Error: " + error.message);
+        output.textContent = "Error: " + error.message;
         console.error(error);
       }
     }
-
-    function buildTable(rows) {
-      const tableHead = document.getElementById("table-head");
-      const tableBody = document.getElementById("table-body");
-
-      // Get headers from the first row object
-      const headers = Object.keys(rows[0]);
-
-      // Create header row
-      const headerRow = document.createElement("tr");
-      headers.forEach(header => {
-        const th = document.createElement("th");
-        th.textContent = header;
-        headerRow.appendChild(th);
-      });
-      tableHead.appendChild(headerRow);
-
-      // Create table rows
-      rows.forEach(row => {
-        const tr = document.createElement("tr");
-        headers.forEach(header => {
-          const td = document.createElement("td");
-          td.textContent = row[header] || "";  // Handle undefined values gracefully
-          tr.appendChild(td);
-        });
-        tableBody.appendChild(tr);
-      });
-    }
   </script>
 </body>
+</html>
+  </script>
+</body>
+</html>
 </html>
   </script>
 </body>
