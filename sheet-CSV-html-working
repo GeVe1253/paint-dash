@@ -17,7 +17,7 @@
 
       try {
         // Replace the link below with your published CSV link
-        const csvUrl = "YOUR_CSV_LINK"; 
+        const csvUrl = "1HaZ13RLpXNKn6JHtz-alICMrc3S6YfAS9m_wjlZVx7Y"; 
         // e.g., "https://docs.google.com/spreadsheets/d/1HaZ13RLpXNKn6JHtz-alICMrc3S6YfAS9m_wjlZVx7Y/pub?output=csv"
 
         // 1. Fetch the CSV text
