@@ -44,7 +44,7 @@
   <script>
     async function loadCsv() {
       // Replace this with your actual published CSV link (File → Publish to the web → CSV)
-      const csvUrl = "YOUR_CSV_LINK"; 
+      const csvUrl = "1HaZ13RLpXNKn6JHtz-alICMrc3S6YfAS9m_wjlZVx7Y"; 
       // Example: "https://docs.google.com/spreadsheets/d/1AbC123/pub?output=csv"
 
       // Clear any existing table content
