@@ -1,0 +1,28 @@
+Failed to load resource: the server responded with a status of 404 ()Understand this errorAI
+        
+          
+          
+          
+            
+          
+          
+            Turn on Console insights in Settings to receive AI assistance for understanding and addressing console warnings and errors.
+            
+      Learn more
+    
+          
+        
+          
+        
+      
+spreadsheets.google.com/feeds/worksheets/e/2PACX-1vTHueh6aJe84zabgRcUtkC0TuHek2zba1Rj_1V7jWM4hp-iEZCl1ZFkNckcFONjIdi2hR4Ike2xXQTt/public/basic?alt=json:1 
+            
+            
+           Failed to load resource: the server responded with a status of 404 ()Understand this errorAI
+tabletop.js:197 SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at s.onload (tabletop.js:195:23)
+s.onload @ tabletop.js:197Understand this errorAI
+tabletop.js:327 Uncaught TypeError: Cannot read properties of undefined (reading 'feed')
+    at h.loadSheets (tabletop.js:327:35)
+    at s.onload (tabletop.js:199:18)
