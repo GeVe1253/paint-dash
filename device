@@ -2,36 +2,54 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>GSheetReader Example</title>
-  <!-- Load GSheetReader from unpkg CDN -->
-  <script src="https://unpkg.com/gsheetreader/dist/index.js"></script>
+  <title>Direct JSON Fetch from Google Sheets</title>
 </head>
 <body>
-  <h1>GSheetReader Demo</h1>
-
-  <button onclick="loadData()">Load Data</button>
-  <pre id="output">Click "Load Data" to fetch from your Google Sheet.</pre>
+  <h1>Fetch JSON from Published Google Sheets</h1>
+  <button onclick="fetchJson()">Fetch Data</button>
+  <pre id="output">Click "Fetch Data" to load the sheet.</pre>
 
   <script>
-    function loadData() {
+    async function fetchJson() {
+      // Show a loading message
       document.getElementById('output').textContent = "Loading...";
 
-      // Call GSheetReader with your sheet's ID
-      GSheetReader({
-        sheetId: 'YOUR_SHEET_ID',  // e.g. '1AbC123XYZ'
-        sheetNumber: 1,           // Which sheet tab to read (1 = first tab)
-        returnAllResults: false,  // If true, returns multiple arrays if multiple header rows found
-        transform: true,          // Converts row arrays into objects keyed by header row
-        onComplete: function(results) {
-          // 'results' is an array of objects, one per row
-          console.log('Fetched Data:', results);
-          document.getElementById('output').textContent = JSON.stringify(results, null, 2);
-        },
-        onError: function(error) {
-          console.error(error);
-          document.getElementById('output').textContent = "Error: " + error.message;
+      // Replace with your published Google Sheet ID
+      const sheetId = "YOUR_SHEET_ID";  // e.g. "1ExampleAbC123"
+      // If your data is in the first tab, use 1. Second tab => 2, etc.
+      const tabNumber = 1; 
+
+      // Construct the older feed URL for JSON
+      const url = `https://spreadsheets.google.com/feeds/list/${sheetId}/${tabNumber}/public/values?alt=json`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-      });
+        const jsonData = await response.json();
+
+        // Google Sheets returns row data in jsonData.feed.entry[]
+        const entries = jsonData.feed.entry || [];
+
+        // Convert each row from the "gsx$..." format to a simpler object
+        const rows = entries.map(entry => {
+          const rowObj = {};
+          for (let key in entry) {
+            if (key.startsWith("gsx$")) {
+              // Example key: "gsx$name" -> property = "name"
+              const propertyName = key.substring(4);
+              rowObj[propertyName] = entry[key].$t; // The cell value
+            }
+          }
+          return rowObj;
+        });
+
+        // Display the array of row objects
+        document.getElementById('output').textContent = JSON.stringify(rows, null, 2);
+      } catch (error) {
+        document.getElementById('output').textContent = "Error: " + error.message;
+      }
     }
   </script>
 </body>
