@@ -1,23 +1,38 @@
-https://spreadsheets.google.com/feeds/worksheets/1HaZ13RLpXNKn6JHtz-alICMrc3S6YfAS9m_wjlZVx7Y/public/basic?alt=json 404 (Not Found)
-xhrFetch @ tabletop.js:201
-requestData @ tabletop.js:177
-fetch @ tabletop.js:159
-h @ tabletop.js:137
-(anonymous) @ tabletop.js:146
-fetchData @ Shift1_BasicViewer_v4.html:19
-onclick @ Shift1_BasicViewer_v4.html:12Understand this errorAI
-tabletop.js:197 SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
-    at JSON.parse (<anonymous>)
-    at XMLHttpRequest.<anonymous> (tabletop.js:195:23)
-(anonymous) @ tabletop.js:197
-XMLHttpRequest.send
-xhrFetch @ tabletop.js:201
-requestData @ tabletop.js:177
-fetch @ tabletop.js:159
-h @ tabletop.js:137
-(anonymous) @ tabletop.js:146
-fetchData @ Shift1_BasicViewer_v4.html:19
-onclick @ Shift1_BasicViewer_v4.html:12Understand this errorAI
-tabletop.js:327 Uncaught TypeError: Cannot read properties of undefined (reading 'feed')
-    at h.loadSheets (tabletop.js:327:35)
-    at XMLHttpRequest.<anonymous> (tabletop.js:199:18)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GSheetReader Example</title>
+  <!-- Load GSheetReader from unpkg CDN -->
+  <script src="https://unpkg.com/gsheetreader/dist/index.js"></script>
+</head>
+<body>
+  <h1>GSheetReader Demo</h1>
+
+  <button onclick="loadData()">Load Data</button>
+  <pre id="output">Click "Load Data" to fetch from your Google Sheet.</pre>
+
+  <script>
+    function loadData() {
+      document.getElementById('output').textContent = "Loading...";
+
+      // Call GSheetReader with your sheet's ID
+      GSheetReader({
+        sheetId: 'YOUR_SHEET_ID',  // e.g. '1AbC123XYZ'
+        sheetNumber: 1,           // Which sheet tab to read (1 = first tab)
+        returnAllResults: false,  // If true, returns multiple arrays if multiple header rows found
+        transform: true,          // Converts row arrays into objects keyed by header row
+        onComplete: function(results) {
+          // 'results' is an array of objects, one per row
+          console.log('Fetched Data:', results);
+          document.getElementById('output').textContent = JSON.stringify(results, null, 2);
+        },
+        onError: function(error) {
+          console.error(error);
+          document.getElementById('output').textContent = "Error: " + error.message;
+        }
+      });
+    }
+  </script>
+</body>
+</html>
