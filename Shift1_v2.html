@@ -218,6 +218,22 @@
 
  
 
+    .return-low { 
+
+      color: limegreen; 
+
+    } 
+
+ 
+
+    .return-high { 
+
+      color: red; 
+
+    } 
+
+ 
+
     #time-display { 
 
       font-size: 32px; 
@@ -252,7 +268,7 @@
 
   <div id="reload-container"> 
 
-    <span id="reload-text">Reloading...</span> 
+    <span id="reload-text">Updating...</span> 
 
     <button id="fetch">Reload</button> 
 
@@ -423,6 +439,22 @@
               if (idleValue === 0) cellClass = "idle-low"; 
 
               else if (idleValue > 5) cellClass = "idle-high"; 
+
+            } 
+
+          } 
+
+ 
+
+          if (index === 7) { 
+
+            let returnValue = parseInt(cell, 10); 
+
+            if (!isNaN(returnValue)) { 
+
+              if (returnValue === 0) cellClass = "return-low"; 
+
+              else if (returnValue >= 3) cellClass = "return-high"; 
 
             } 
 
