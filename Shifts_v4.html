@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shift Overview</title>
+
+  <style>
+    body {
+      background-color: #202124;
+      color: #c0c0c0;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 34px;
+      text-transform: uppercase;
+      background-color: #42444a;
+      padding: 10px 0;
+      margin: 0;
+      width: 100%;
+      font-weight: normal;
+    }
+
+    #reload-container {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    #reload-text {
+      font-size: 16px;
+      margin-right: 10px;
+      display: none;
+    }
+
+    #fetch {
+      background-color: #42444a;
+      border: 1px solid #666;
+      color: #d3d3d3;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    #fetch:hover {
+      background-color: #505256;
+    }
+
+    .table-container {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    table {
+      width: 96%;
+      border-collapse: collapse;
+      background-color: #292a2d;
+      font-size: 18px;
+      margin: 8px auto;
+    }
+
+    th, td {
+      border: 1px solid #555;
+      padding: 10px;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    th {
+      background-color: #42444a;
+      text-transform: uppercase;
+      font-size: 18px;
+    }
+
+    .shift-header {
+      background-color: #383a40;
+      font-weight: bold;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #2e2f33;
+    }
+
+    tbody tr:hover {
+      background-color: #383a40;
+    }
+
+    .fact-low { color: red; }
+    .fact-high { color: limegreen; }
+    .idle-low { color: limegreen; }
+    .idle-high { color: red; }
+    .return-low { color: limegreen; }
+    .return-high { color: red; }
+
+    #time-display {
+      font-size: 28px;
+      text-transform: uppercase;
+      background-color: #42444a;
+      padding: 10px 0;
+      margin-top: auto;
+      width: 100%;
+      font-weight: normal;
+    }
+  </style>
+</head>
+<body>
+
+  <h1 id="header-title">ОБЕ СМЕНЫ</h1>
+
+  <div id="reload-container">
+    <span id="reload-text">Updating...</span>
+    <button id="fetch">Reload</button>
+  </div>
+
+  <section id="csvTable">
+    <table>
+      <thead>
+        <tr>
+          <th rowspan="2">ВРЕМЯ</th>
+          <th colspan="4">ПЕРВАЯ СМЕНА</th>
+          <th colspan="4">ВТОРАЯ СМЕНА</th>
+        </tr>
+        <tr>
+          <th>ДОСТУПНО (МИНУТ)</th>
+          <th>ПЛАН (КУЗОВОВ)</th>
+          <th>ФАКТ (КУЗОВОВ)</th>
+          <th>БУФЕР (КУЗОВОВ)</th>
+          <th>ДОСТУПНО (МИНУТ)</th>
+          <th>ПЛАН (КУЗОВОВ)</th>
+          <th>ФАКТ (КУЗОВОВ)</th>
+          <th>БУФЕР (КУЗОВОВ)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Data rows will be generated dynamically -->
+      </tbody>
+    </table>
+  </section>
+
+  <div id="time-display">ВРЕМЯ: --:--, --.--.----</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script>
+    const shiftUrls = {
+      1: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTHueh6aJe84zabgRcUtkC0TuHek2zba1Rj_1V7jWM4hp-iEZCl1ZFkNckcFONjIdi2hR4Ike2xXQTt/pub?output=csv",
+      2: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRFFJ7ucKA_ccI7AMTebZNhzB03LG1-a6qezgPYv41k9N1X4lvfyDaWqhbJL5R-uDDIrf5w7ZuqKqzT/pub?output=csv"
+    };
+
+    let shiftData = { 1: [], 2: [] };
+
+    async function loadCsv(shift) {
+      try {
+        const response = await fetch(`${shiftUrls[shift]}&_=${new Date().getTime()}`);
+        if (!response.ok) throw new Error("Network response was not ok: " + response.status);
+        const csvText = await response.text();
+        const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true }).data;
+
+        shiftData[shift] = parsed;
+        if (shiftData[1].length > 0 && shiftData[2].length > 0) {
+          updateDisplay();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    function updateDisplay() {
+      let tableBody = "";
+      const maxRows = Math.max(shiftData[1].length, shiftData[2].length);
+
+      for (let i = 0; i < maxRows; i++) {
+        const row1 = shiftData[1][i] || {};
+        const row2 = shiftData[2][i] || {};
+
+        tableBody += `<tr>
+          <td>${row1["ВРЕМЯ"] || row2["ВРЕМЯ"] || "--:--"}</td>
+          ${generateCells(row1)}
+          ${generateCells(row2)}
+        </tr>`;
+      }
+
+      document.querySelector("tbody").innerHTML = tableBody;
+      updateTime();
+    }
+
+    function generateCells(row) {
+      const keys = ["ДОСТУПНО (МИНУТ)", "ПЛАН (КУЗОВОВ)", "ФАКТ (КУЗОВОВ)", "БУФЕР (КУЗОВОВ)"];
+      return keys.map(key => `<td>${row[key] || "-"}</td>`).join("");
+    }
+
+    function updateTime() {
+      let now = new Date();
+      document.getElementById("time-display").innerText = `ВРЕМЯ: ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}, ${now.getDate().toString().padStart(2, '0')}.${(now.getMonth() + 1).toString().padStart(2, '0')}.${now.getFullYear()}`;
+    }
+
+    document.getElementById("fetch").addEventListener("click", () => {
+      loadCsv(1);
+      loadCsv(2);
+    });
+
+    loadCsv(1);
+    loadCsv(2);
+  </script>
+
+</body>
+</html>
