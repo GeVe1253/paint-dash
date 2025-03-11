@@ -64,6 +64,18 @@
 
  
 
+    #date-display { 
+
+      font-size: 28px; 
+
+      color: #d3d3d3; 
+
+      margin: 10px 0; 
+
+    } 
+
+ 
+
     #reload-container { 
 
       position: absolute; 
@@ -136,8 +148,6 @@
 
       height: 65vh; 
 
-      table-layout: fixed; 
-
     } 
 
  
@@ -155,10 +165,6 @@
       width: 12.5%; 
 
       font-weight: normal; 
-
-      overflow: hidden; 
-
-      white-space: nowrap; 
 
     } 
 
@@ -268,7 +274,11 @@
 
  
 
-  <h1 id="main-title">Первая Смена</h1> 
+  <h1 id="header-title">Первая Смена</h1> 
+
+ 
+
+  <div id="date-display">Дата: --.--.----</div> 
 
  
 
@@ -300,17 +310,7 @@
 
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTHueh6aJe84zabgRcUtkC0TuHek2zba1Rj_1V7jWM4hp-iEZCl1ZFkNckcFONjIdi2hR4Ike2xXQTt/pub?output=csv"; 
 
-    let lastTableHtml = ""; 
-
- 
-
-    const monthNames = [ 
-
-      "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", 
-
-      "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря" 
-
-    ]; 
+    const monthNames = ["", "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"]; 
 
  
 
@@ -320,49 +320,47 @@
 
         document.getElementById("reload-text").innerText = type === "manual" ? "Reloading..." : "Updating..."; 
 
-        document.getElementById("reload-text").style.display = "block"; 
+        document.getElementById("reload-text").style.display = "block";  
 
  
 
-        const response = await fetch(`${csvUrl}&_=${new Date().getTime()}`); 
+        const response = await fetch(`${csvUrl}&_=${new Date().getTime()}`);  
 
         if (!response.ok) throw new Error("Network response was not ok: " + response.status); 
 
         const csvText = await response.text(); 
 
-        const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true }); 
+        const parsed = Papa.parse(csvText, { header: false, skipEmptyLines: true }); 
 
  
 
-        const dateRow = parsed.data.find(row => row["Date"]); 
+        const day = parsed.data[1][0]?.padStart(2, "0"); 
 
-        if (dateRow) { 
+        const month = parsed.data[2][0]?.padStart(2, "0"); 
 
-          const day = dateRow["Date"].padStart(2, "0"); 
-
-          const monthIndex = parseInt(parsed.data.find(row => row["Month"])?.["Month"], 10) - 1; 
-
-          const year = parsed.data.find(row => row["Year"])?.["Year"]; 
+        const year = parsed.data[3][0]; 
 
  
 
-          if (day && monthIndex >= 0 && year) { 
+        document.getElementById("date-display").innerText = `Дата: ${day}.${month}.${year}`; 
 
-            const formattedDate = `${day} ${monthNames[monthIndex]}`; 
+ 
 
-            document.getElementById("main-title").innerText = `Первая Смена (${formattedDate})`; 
+        if (parsed.data[1][0] !== parsed.data[7][0] || parsed.data[2][0] !== parsed.data[8][0] || parsed.data[3][0] !== parsed.data[9][0]) { 
 
-          } 
+          document.getElementById("header-title").innerText = `ПЕРВАЯ СМЕНА (${parseInt(day)} ${monthNames[parseInt(month)]})`; 
 
         } 
 
  
 
-        let newTableHtml = generateTable(parsed.data); 
+        let newTableHtml = generateTable(parsed.data.slice(4)); 
 
-        if (newTableHtml) lastTableHtml = newTableHtml; 
+        document.getElementById("csvTable").innerHTML = newTableHtml; 
 
-        document.getElementById("csvTable").innerHTML = lastTableHtml; 
+        updateTime(); 
+
+ 
 
       } catch (error) { 
 
@@ -370,7 +368,7 @@
 
       } finally { 
 
-        document.getElementById("reload-text").style.display = "none"; 
+        setTimeout(() => document.getElementById("reload-text").style.display = "none", 500); 
 
       } 
 
@@ -380,11 +378,13 @@
 
     function generateTable(data) { 
 
-      let headers = Object.keys(data[0]).filter(key => key !== "Date"); 
+      if (data.length === 0) return "<p>No data found</p>"; 
 
  
 
       let table = `<table><thead><tr>`; 
+
+      let headers = ["ВРЕМЯ", "ДОСТУПНО<br>(МИНУТ)", "ПЛАН<br>(ШТУК)", "ФАКТ<br>(ШТУК)", "ТАКТ<br>(МИНУТ)", "БУФЕР<br>(ШТУК)", "ПРОСТОЙ<br>(МИНУТ)", "ВОЗВРАТ<br>(ШТУК)"]; 
 
       headers.forEach(header => table += `<th>${header}</th>`); 
 
@@ -396,55 +396,7 @@
 
         table += `<tr>`; 
 
-        headers.forEach((key, index) => { 
-
-          let cell = row[key]; 
-
-          let cellClass = ""; 
-
- 
-
-          if (index === 3) { 
-
-            let planValue = parseInt(row[headers[2]], 10); 
-
-            let factValue = parseInt(cell, 10); 
-
-            if (factValue < planValue) cellClass = "fact-low"; 
-
-            else if (factValue > planValue) cellClass = "fact-high"; 
-
-          } 
-
- 
-
-          if (index === 6) { 
-
-            let idleValue = parseInt(cell, 10); 
-
-            if (idleValue === 0) cellClass = "idle-low"; 
-
-            else if (idleValue > 5) cellClass = "idle-high"; 
-
-          } 
-
- 
-
-          if (index === 7) { 
-
-            let returnValue = parseInt(cell, 10); 
-
-            if (returnValue === 0) cellClass = "return-low"; 
-
-            else if (returnValue >= 3) cellClass = "return-high"; 
-
-          } 
-
- 
-
-          table += `<td class="${cellClass}">${cell}</td>`; 
-
-        }); 
+        row.slice(0, 8).forEach(cell => table += `<td>${cell}</td>`); 
 
         table += `</tr>`; 
 
@@ -455,6 +407,16 @@
       table += `</tbody></table>`; 
 
       return table; 
+
+    } 
+
+ 
+
+    function updateTime() { 
+
+      let now = new Date(); 
+
+      document.getElementById("time-display").innerText = `ВРЕМЯ: ${now.toLocaleTimeString("ru-RU", { hour: '2-digit', minute: '2-digit' })}, ${now.toLocaleDateString("ru-RU")}`; 
 
     } 
 
