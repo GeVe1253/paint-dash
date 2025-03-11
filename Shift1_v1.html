@@ -1,5 +1,3 @@
-<!DOCTYPE html> 
-
 <html lang="ru"> 
 
 <head> 
@@ -14,13 +12,11 @@
 
   <style> 
 
-    /* Dark mode styling */ 
-
     body { 
 
-      background-color: #202124; /* Firefox/Chrome dark mode background */ 
+      background-color: #202124; 
 
-      color: #d3d3d3; /* Light gray text */ 
+      color: #d3d3d3; 
 
       font-family: Arial, sans-serif; 
 
@@ -30,23 +26,29 @@
 
       text-align: center; 
 
+      display: flex; 
+
+      flex-direction: column; 
+
+      justify-content: space-between; 
+
+      height: 100vh; 
+
     } 
 
  
-
-    /* Header resembling Firefox active tab */ 
 
     h1 { 
 
-      color: #ffffff; 
+      color: #c0c0c0; 
 
-      margin-bottom: 20px; 
+      margin-bottom: 5px; 
+
+      font-size: 28px; 
 
     } 
 
  
-
-    /* Reload button styling */ 
 
     #fetch { 
 
@@ -82,17 +84,17 @@
 
  
 
-    /* Table styling */ 
-
     table { 
 
       width: 100%; 
 
       border-collapse: collapse; 
 
-      background-color: #292a2d; /* Darker table background */ 
+      background-color: #292a2d; 
 
-      margin-top: 20px; 
+      margin-top: 10px; 
+
+      font-size: 22px; 
 
     } 
 
@@ -100,9 +102,9 @@
 
     th, td { 
 
-      border: 1px solid #555; /* Vertical and horizontal lines */ 
+      border: 1px solid #555; 
 
-      padding: 10px; 
+      padding: 12px; 
 
       text-align: left; 
 
@@ -114,9 +116,11 @@
 
     th { 
 
-      background-color: #42444a; /* Header color similar to Firefox's tab bar */ 
+      background-color: #42444a; 
 
       text-transform: uppercase; 
+
+      font-size: 24px; 
 
     } 
 
@@ -124,7 +128,7 @@
 
     tbody tr:nth-child(even) { 
 
-      background-color: #2e2f33; /* Alternating row color */ 
+      background-color: #2e2f33; 
 
     } 
 
@@ -132,7 +136,21 @@
 
     tbody tr:hover { 
 
-      background-color: #383a40; /* Hover effect */ 
+      background-color: #383a40; 
+
+    } 
+
+ 
+
+    #time-display { 
+
+      font-size: 28px; 
+
+      color: #c0c0c0; 
+
+      margin-top: auto; 
+
+      padding-top: 20px; 
 
     } 
 
@@ -148,19 +166,19 @@
 
  
 
-  <!-- Reload Button (Top-Right) --> 
-
   <button id="fetch">Reload</button> 
 
  
-
-  <!-- Table Section --> 
 
   <section id="csvTable"> 
 
     <p>Loading data...</p> 
 
   </section> 
+
+ 
+
+  <div id="time-display">Время: --:--, --.--.----</div> 
 
  
 
@@ -172,29 +190,21 @@
 
  
 
-    // Function to generate an HTML table from CSV data 
-
     function generateTable(data) { 
 
       if (data.length === 0) return "<p>No data found</p>"; 
 
  
 
-      let table = `<table> 
+      let table = `<table><thead><tr>`; 
 
-        <thead> 
+      let headers = Object.keys(data[0]); 
 
-          <tr>`; 
-
-       
-
-      Object.keys(data[0]).forEach(key => { 
-
-        table += `<th>${key}</th>`; 
-
-      }); 
+      headers.pop();  
 
  
+
+      headers.forEach(key => table += `<th>${key}</th>`); 
 
       table += `</tr></thead><tbody>`; 
 
@@ -204,11 +214,11 @@
 
         table += `<tr>`; 
 
-        Object.values(row).forEach(cell => { 
+        let values = Object.values(row); 
 
-          table += `<td>${cell}</td>`; 
+        values.pop();  
 
-        }); 
+        values.forEach(cell => table += `<td>${cell}</td>`); 
 
         table += `</tr>`; 
 
@@ -234,25 +244,19 @@
 
         const response = await fetch(csvUrl); 
 
-        if (!response.ok) { 
+        if (!response.ok) throw new Error("Network response was not ok: " + response.status); 
 
-          throw new Error("Network response was not ok: " + response.status); 
-
-        } 
+ 
 
         const csvText = await response.text(); 
 
-        const parsed = Papa.parse(csvText, { 
-
-          header: true, 
-
-          skipEmptyLines: true 
-
-        }); 
+        const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true }); 
 
  
 
         document.getElementById("csvTable").innerHTML = generateTable(parsed.data); 
+
+        updateTime(); 
 
  
 
@@ -268,15 +272,23 @@
 
  
 
-    // Auto-fetch data on page load 
+    function updateTime() { 
 
-    window.addEventListener('DOMContentLoaded', loadCsv); 
+      let now = new Date(); 
+
+      let formattedTime = `Время: ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}, ${now.getDate().toString().padStart(2, '0')}.${(now.getMonth() + 1).toString().padStart(2, '0')}.${now.getFullYear()}`; 
+
+      document.getElementById("time-display").innerText = formattedTime; 
+
+    } 
 
  
 
-    // Reload button to manually fetch data 
+    window.addEventListener('DOMContentLoaded', loadCsv); 
 
     document.getElementById('fetch').addEventListener('click', loadCsv); 
+
+    setInterval(loadCsv, 60000); 
 
   </script> 
 
@@ -284,4 +296,4 @@
 
 </body> 
 
-</html>  
+</html> 
