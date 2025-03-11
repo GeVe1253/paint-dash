@@ -1,121 +1,439 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <title>Первая Смена</title>
-  <style>
-    /* Table styling (optional) */
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+<!DOCTYPE html> 
 
-    /* Conditional coloring classes */
-    .green { background-color: #c6efce; color: #006100; }  /* green highlight */
-    .red   { background-color: #ffc7ce; color: #9c0006; }  /* red highlight */
-  </style>
-</head>
-<body>
-  <h2 id="shiftTitle">Первая Смена</h2>
+<html lang="ru"> 
 
-  <table id="data-table">
-    <thead>
-      <tr>
-        <th>ВРЕМЯ</th>
-        <th>ДОСТУПНО (МИНУТ)</th>
-        <th>ПЛАН (ШТУК)</th>
-        <th>ФАКТ (ШТУК)</th>
-        <th>ТАКТ (МИНУТ)</th>
-        <th>БУФЕР (ШТУК)</th>
-        <th>ПРОСТОЙ (МИНУТ)</th>
-        <th>ВОЗВРАТ (ШТУК)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Data rows will be inserted here by the script -->
-    </tbody>
-  </table>
+<head> 
 
-  <script>
-    // Example: Fetch the spreadsheet CSV or JSON data (this part will depend on your data source)
-    // Here we'll assume sheetData gets populated as an array of arrays, including the header row.
-    let sheetData = [];  
-    // ... (Code to fetch and populate sheetData goes here)
+  <meta charset="UTF-8"> 
 
-    // Once sheetData is available, proceed with processing:
-    function renderTable() {
-      if (!sheetData || sheetData.length === 0) return;
-      
-      // 1. Extract date parts from the Date column (first column)
-      const dateColIndex = 0;
-      let day   = sheetData[1][dateColIndex];
-      let month = sheetData[2][dateColIndex];
-      let year  = sheetData[3][dateColIndex];
-      // Pad single digits with zero
-      day   = day.toString().padStart(2, '0');    // e.g., "7" -> "07"
-      month = month.toString().padStart(2, '0');  // e.g., "3" -> "03"
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 
-      // 2. Update the shift title if the sheet's date is not today
-      const today = new Date();
-      const currentDay   = today.getDate();
-      const currentMonth = today.getMonth() + 1;
-      const currentYear  = today.getFullYear();
-      const sheetDay   = Number(day);
-      const sheetMonth = Number(month);
-      const sheetYear  = Number(year);
-      if (sheetDay !== currentDay || sheetMonth !== currentMonth || sheetYear !== currentYear) {
-        const titleEl = document.getElementById('shiftTitle');
-        if (titleEl) {
-          titleEl.textContent = `Первая Смена – ${day}.${month}.${year}`;
-        }
-      }
+  <title>Shift1 Overview</title> 
 
-      // 3. Populate the table body with data (excluding the Date column)
-      const tbody = document.querySelector('#data-table tbody');
-      tbody.innerHTML = '';  // clear any existing rows
-      const startRow = 4;    // data starts from row 5 in sheet (index 4 in array, skipping header and date parts)
-      for (let i = startRow; i < sheetData.length; i++) {
-        const row = sheetData[i];
-        if (!row || row.length === 0) continue; // skip empty rows (if any)
+ 
 
-        const tr = document.createElement('tr');
-        // Loop through columns 1 to end (skip index 0 which is Date)
-        for (let j = 1; j < row.length; j++) {
-          const cellText = row[j];
-          const td = document.createElement('td');
-          td.textContent = cellText;
+  <style> 
 
-          // Apply color-coding based on column:
-          if (j === 4) {  // ФАКТ column (4th index in raw data corresponds to "ФАКТ")
-            const fact = Number(cellText);
-            const plan = Number(row[3]); // ПЛАН is index 3
-            if (!isNaN(fact) && !isNaN(plan)) {
-              if (fact < plan) td.classList.add('red');
-              else if (fact > plan) td.classList.add('green');
-            }
-          }
-          if (j === 7) {  // ПРОСТОЙ column (7th index)
-            const idle = Number(cellText);
-            if (!isNaN(idle)) {
-              if (idle === 0) td.classList.add('green');
-              else if (idle > 5) td.classList.add('red');
-            }
-          }
-          if (j === 8) {  // ВОЗВРАТ column (8th index)
-            const ret = Number(cellText);
-            if (!isNaN(ret)) {
-              if (ret === 0) td.classList.add('green');
-              else if (ret >= 3) td.classList.add('red');
-            }
-          }
+    body { 
 
-          tr.appendChild(td);
-        }
-        tbody.appendChild(tr);
-      }
-    }
+      background-color: #202124; 
 
-    // Call renderTable after data is fetched
-    // (For example, if using fetch, call renderTable() in the .then callback after setting sheetData)
-    renderTable();
-  </script>
-</body>
-</html>
+      color: #d3d3d3; 
+
+      font-family: Arial, sans-serif; 
+
+      margin: 0; 
+
+      padding: 0; 
+
+      text-align: center; 
+
+      display: flex; 
+
+      flex-direction: column; 
+
+      justify-content: space-between; 
+
+      height: 100vh; 
+
+      overflow: hidden; 
+
+    } 
+
+ 
+
+    h1 { 
+
+      color: #c0c0c0; 
+
+      font-size: 38px; 
+
+      text-transform: uppercase; 
+
+      background-color: #42444a; 
+
+      padding: 12px 0; 
+
+      margin: 0; 
+
+      width: 100%; 
+
+      font-weight: normal; 
+
+    } 
+
+ 
+
+    #date-display { 
+
+      font-size: 28px; 
+
+      color: #d3d3d3; 
+
+      margin: 10px 0; 
+
+    } 
+
+ 
+
+    #reload-container { 
+
+      position: absolute; 
+
+      top: 15px; 
+
+      right: 20px; 
+
+      display: flex; 
+
+      align-items: center; 
+
+    } 
+
+ 
+
+    #reload-text { 
+
+      color: #d3d3d3; 
+
+      font-size: 18px; 
+
+      margin-right: 10px; 
+
+      display: none; 
+
+    } 
+
+ 
+
+    #fetch { 
+
+      background-color: #2e2f33; 
+
+      color: #d3d3d3; 
+
+      border: 1px solid #666; 
+
+      padding: 8px 14px; 
+
+      border-radius: 4px; 
+
+      cursor: pointer; 
+
+      font-size: 18px; 
+
+    } 
+
+ 
+
+    #fetch:hover { 
+
+      background-color: #383a40; 
+
+    } 
+
+ 
+
+    table { 
+
+      width: 100%; 
+
+      border-collapse: collapse; 
+
+      background-color: #292a2d; 
+
+      margin-top: 10px; 
+
+      font-size: 22px; 
+
+      height: 65vh; 
+
+    } 
+
+ 
+
+    th, td { 
+
+      border: 1px solid #555; 
+
+      padding: 18px; 
+
+      text-align: center; 
+
+      color: #d3d3d3; 
+
+      width: 12.5%; 
+
+      font-weight: normal; 
+
+    } 
+
+ 
+
+    th { 
+
+      background-color: #42444a; 
+
+      text-transform: uppercase; 
+
+      font-size: 22px; 
+
+    } 
+
+ 
+
+    tbody tr:nth-child(even) { 
+
+      background-color: #2e2f33; 
+
+    } 
+
+ 
+
+    tbody tr:hover { 
+
+      background-color: #383a40; 
+
+    } 
+
+ 
+
+    #time-display { 
+
+      font-size: 32px; 
+
+      text-transform: uppercase; 
+
+      color: #c0c0c0; 
+
+      background-color: #42444a; 
+
+      padding: 12px 0; 
+
+      margin-top: auto; 
+
+      width: 100%; 
+
+      font-weight: normal; 
+
+    } 
+
+  </style> 
+
+</head> 
+
+<body> 
+
+ 
+
+  <h1 id="main-title">Первая Смена</h1> 
+
+ 
+
+  <div id="reload-container"> 
+
+    <span id="reload-text">Updating...</span> 
+
+    <button id="fetch">Reload</button> 
+
+  </div> 
+
+ 
+
+  <section id="csvTable"> 
+
+    <p>Loading data...</p> 
+
+  </section> 
+
+ 
+
+  <div id="time-display">Время: --:--, --.--.----</div> 
+
+ 
+
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script> 
+
+  <script> 
+
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTHueh6aJe84zabgRcUtkC0TuHek2zba1Rj_1V7jWM4hp-iEZCl1ZFkNckcFONjIdi2hR4Ike2xXQTt/pub?output=csv"; 
+
+    let lastTableHtml = ""; 
+
+ 
+
+    const monthNames = [ 
+
+      "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", 
+
+      "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря" 
+
+    ]; 
+
+ 
+
+    function showReloadingText(type) { 
+
+      document.getElementById("reload-text").innerText = type === "manual" ? "Reloading..." : "Updating..."; 
+
+      document.getElementById("reload-text").style.display = "block";  
+
+    } 
+
+ 
+
+    function hideReloadingText() { 
+
+      setTimeout(() => { 
+
+        document.getElementById("reload-text").style.display = "none";  
+
+      }, 500); 
+
+    } 
+
+ 
+
+    async function loadCsv(type) { 
+
+      try { 
+
+        showReloadingText(type); 
+
+ 
+
+        const response = await fetch(`${csvUrl}&_=${new Date().getTime()}`);  
+
+        if (!response.ok) throw new Error("Network response was not ok: " + response.status); 
+
+        const csvText = await response.text(); 
+
+        const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true }); 
+
+ 
+
+        // Extract Date Information 
+
+        const dateRow = parsed.data.find(row => row["Date"]); 
+
+        if (dateRow) { 
+
+          const day = dateRow["Date"].padStart(2, "0"); 
+
+          const monthIndex = parseInt(parsed.data.find(row => row["Month"])?.["Month"], 10) - 1; 
+
+          const year = parsed.data.find(row => row["Year"])?.["Year"]; 
+
+ 
+
+          if (day && monthIndex >= 0 && year) { 
+
+            const formattedDate = `${day} ${monthNames[monthIndex]}`; 
+
+            const today = new Date(); 
+
+            const todayFormatted = `${today.getDate().toString().padStart(2, "0")}.${(today.getMonth() + 1).toString().padStart(2, "0")}.${today.getFullYear()}`; 
+
+ 
+
+            if (`${day}.${monthIndex + 1}.${year}` !== todayFormatted) { 
+
+              document.getElementById("main-title").innerText = `Первая Смена (${formattedDate})`; 
+
+            } 
+
+          } 
+
+        } 
+
+ 
+
+        let newTableHtml = generateTable(parsed.data); 
+
+        if (newTableHtml) lastTableHtml = newTableHtml; 
+
+        document.getElementById("csvTable").innerHTML = lastTableHtml; 
+
+        updateTime(); 
+
+ 
+
+      } catch (error) { 
+
+        console.error(error); 
+
+      } finally { 
+
+        hideReloadingText(); 
+
+      } 
+
+    } 
+
+ 
+
+    function generateTable(data) { 
+
+      if (data.length === 0) return "<p>No data found</p>"; 
+
+ 
+
+      let headers = Object.keys(data[0]).filter(key => key !== "Date"); 
+
+ 
+
+      let table = `<table><thead><tr>`; 
+
+      headers.forEach(header => table += `<th>${header}</th>`); 
+
+      table += `</tr></thead><tbody>`; 
+
+ 
+
+      data.forEach(row => { 
+
+        table += `<tr>`; 
+
+        headers.forEach(key => { 
+
+          table += `<td>${row[key]}</td>`; 
+
+        }); 
+
+        table += `</tr>`; 
+
+      }); 
+
+ 
+
+      table += `</tbody></table>`; 
+
+      return table; 
+
+    } 
+
+ 
+
+    function updateTime() { 
+
+      let now = new Date(); 
+
+      document.getElementById("time-display").innerText = `ВРЕМЯ: ${now.toLocaleTimeString("ru-RU", { hour: '2-digit', minute: '2-digit' })}, ${now.toLocaleDateString("ru-RU")}`; 
+
+    } 
+
+ 
+
+    window.addEventListener('DOMContentLoaded', () => loadCsv("auto")); 
+
+    document.getElementById('fetch').addEventListener('click', () => loadCsv("manual")); 
+
+    setInterval(() => loadCsv("auto"), 300000); 
+
+  </script> 
+
+ 
+
+</body> 
+
+</html> 
