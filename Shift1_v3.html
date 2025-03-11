@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Первая Смена</title>
+  <style>
+    /* Table styling (optional) */
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+
+    /* Conditional coloring classes */
+    .green { background-color: #c6efce; color: #006100; }  /* green highlight */
+    .red   { background-color: #ffc7ce; color: #9c0006; }  /* red highlight */
+  </style>
+</head>
+<body>
+  <h2 id="shiftTitle">Первая Смена</h2>
+
+  <table id="data-table">
+    <thead>
+      <tr>
+        <th>ВРЕМЯ</th>
+        <th>ДОСТУПНО (МИНУТ)</th>
+        <th>ПЛАН (ШТУК)</th>
+        <th>ФАКТ (ШТУК)</th>
+        <th>ТАКТ (МИНУТ)</th>
+        <th>БУФЕР (ШТУК)</th>
+        <th>ПРОСТОЙ (МИНУТ)</th>
+        <th>ВОЗВРАТ (ШТУК)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Data rows will be inserted here by the script -->
+    </tbody>
+  </table>
+
+  <script>
+    // Example: Fetch the spreadsheet CSV or JSON data (this part will depend on your data source)
+    // Here we'll assume sheetData gets populated as an array of arrays, including the header row.
+    let sheetData = [];  
+    // ... (Code to fetch and populate sheetData goes here)
+
+    // Once sheetData is available, proceed with processing:
+    function renderTable() {
+      if (!sheetData || sheetData.length === 0) return;
+      
+      // 1. Extract date parts from the Date column (first column)
+      const dateColIndex = 0;
+      let day   = sheetData[1][dateColIndex];
+      let month = sheetData[2][dateColIndex];
+      let year  = sheetData[3][dateColIndex];
+      // Pad single digits with zero
+      day   = day.toString().padStart(2, '0');    // e.g., "7" -> "07"
+      month = month.toString().padStart(2, '0');  // e.g., "3" -> "03"
+
+      // 2. Update the shift title if the sheet's date is not today
+      const today = new Date();
+      const currentDay   = today.getDate();
+      const currentMonth = today.getMonth() + 1;
+      const currentYear  = today.getFullYear();
+      const sheetDay   = Number(day);
+      const sheetMonth = Number(month);
+      const sheetYear  = Number(year);
+      if (sheetDay !== currentDay || sheetMonth !== currentMonth || sheetYear !== currentYear) {
+        const titleEl = document.getElementById('shiftTitle');
+        if (titleEl) {
+          titleEl.textContent = `Первая Смена – ${day}.${month}.${year}`;
+        }
+      }
+
+      // 3. Populate the table body with data (excluding the Date column)
+      const tbody = document.querySelector('#data-table tbody');
+      tbody.innerHTML = '';  // clear any existing rows
+      const startRow = 4;    // data starts from row 5 in sheet (index 4 in array, skipping header and date parts)
+      for (let i = startRow; i < sheetData.length; i++) {
+        const row = sheetData[i];
+        if (!row || row.length === 0) continue; // skip empty rows (if any)
+
+        const tr = document.createElement('tr');
+        // Loop through columns 1 to end (skip index 0 which is Date)
+        for (let j = 1; j < row.length; j++) {
+          const cellText = row[j];
+          const td = document.createElement('td');
+          td.textContent = cellText;
+
+          // Apply color-coding based on column:
+          if (j === 4) {  // ФАКТ column (4th index in raw data corresponds to "ФАКТ")
+            const fact = Number(cellText);
+            const plan = Number(row[3]); // ПЛАН is index 3
+            if (!isNaN(fact) && !isNaN(plan)) {
+              if (fact < plan) td.classList.add('red');
+              else if (fact > plan) td.classList.add('green');
+            }
+          }
+          if (j === 7) {  // ПРОСТОЙ column (7th index)
+            const idle = Number(cellText);
+            if (!isNaN(idle)) {
+              if (idle === 0) td.classList.add('green');
+              else if (idle > 5) td.classList.add('red');
+            }
+          }
+          if (j === 8) {  // ВОЗВРАТ column (8th index)
+            const ret = Number(cellText);
+            if (!isNaN(ret)) {
+              if (ret === 0) td.classList.add('green');
+              else if (ret >= 3) td.classList.add('red');
+            }
+          }
+
+          tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+      }
+    }
+
+    // Call renderTable after data is fetched
+    // (For example, if using fetch, call renderTable() in the .then callback after setting sheetData)
+    renderTable();
+  </script>
+</body>
+</html>
