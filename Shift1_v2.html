@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 
-  <title>Shift 1 Overall</title> 
+  <title>Первая Смена</title> 
 
  
 
@@ -186,54 +186,6 @@
 
  
 
-    .fact-low { 
-
-      color: red; 
-
-    } 
-
- 
-
-    .fact-high { 
-
-      color: limegreen; 
-
-    } 
-
- 
-
-    .idle-low { 
-
-      color: limegreen; 
-
-    } 
-
- 
-
-    .idle-high { 
-
-      color: red; 
-
-    } 
-
- 
-
-    .return-low { 
-
-      color: limegreen; 
-
-    } 
-
- 
-
-    .return-high { 
-
-      color: red; 
-
-    } 
-
- 
-
     #time-display { 
 
       font-size: 32px; 
@@ -382,41 +334,65 @@
 
  
 
-      let lastRow = data[data.length - 1]; 
-
-      let sheetDateParts = lastRow[8].split('-'); // Column 9 (omitted one) 
+      let lastValidDate = null; 
 
  
 
-      if (sheetDateParts.length === 3) { 
+      for (let i = data.length - 1; i >= 0; i--) { 
 
-        let sheetDay = parseInt(sheetDateParts[0], 10); 
+        let dateCell = Object.values(data[i])[8]; // Column 9 (Date) 
 
-        let sheetMonth = parseInt(sheetDateParts[1], 10); 
+         
 
-        let sheetYear = parseInt(sheetDateParts[2], 10); 
+        if (dateCell && dateCell !== "0-0-0") { 
 
- 
+          lastValidDate = dateCell; 
 
-        let today = new Date(); 
+          break; 
 
-        let currentDay = today.getDate(); 
+        } 
 
-        let currentMonth = today.getMonth() + 1; 
-
-        let currentYear = today.getFullYear(); 
+      } 
 
  
 
-        if (sheetDay !== currentDay || sheetMonth !== currentMonth || sheetYear !== currentYear) { 
+      if (lastValidDate) { 
 
-          let formattedDate = `${sheetDay} ${monthNames[sheetMonth - 1]}`; 
+        let sheetDateParts = lastValidDate.split('-'); 
 
-          document.getElementById("header-title").innerText = `Первая Смена (${formattedDate})`; 
+ 
 
-        } else { 
+        if (sheetDateParts.length === 3) { 
 
-          document.getElementById("header-title").innerText = "Первая Смена"; 
+          let sheetDay = parseInt(sheetDateParts[0], 10); 
+
+          let sheetMonth = parseInt(sheetDateParts[1], 10); 
+
+          let sheetYear = parseInt(sheetDateParts[2], 10); 
+
+ 
+
+          let today = new Date(); 
+
+          let currentDay = today.getDate(); 
+
+          let currentMonth = today.getMonth() + 1; 
+
+          let currentYear = today.getFullYear(); 
+
+ 
+
+          if (sheetDay !== currentDay || sheetMonth !== currentMonth || sheetYear !== currentYear) { 
+
+            let formattedDate = `${sheetDay} ${monthNames[sheetMonth - 1]}`; 
+
+            document.getElementById("header-title").innerText = `Первая Смена (${formattedDate})`; 
+
+          } else { 
+
+            document.getElementById("header-title").innerText = "Первая Смена"; 
+
+          } 
 
         } 
 
