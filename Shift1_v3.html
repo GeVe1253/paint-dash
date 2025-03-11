@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 
-  <title>Первая Смеgна</title> 
+  <title>Первая Смfена</title> 
 
  
 
@@ -284,7 +284,7 @@
 
  
 
-  <div id="time-display">Время: --:--, --.--.----</div> 
+  <div id="time-display">ВРЕМЯ: --:--, --.--.----</div> 
 
  
 
@@ -314,23 +314,27 @@
 
         const csvText = await response.text(); 
 
-        const parsed = Papa.parse(csvText, { header: false, skipEmptyLines: true }); 
+        const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true }); 
 
  
 
-        const day = parsed.data[1][0]?.padStart(2, "0"); 
+        // Extract and check date 
 
-        const month = parsed.data[2][0]?.padStart(2, "0"); 
+        const day = parsed.data[0]["Date"]?.padStart(2, "0"); 
+
+        const month = parsed.data[1]["Date"]?.padStart(2, "0"); 
 
  
 
-        if (parsed.data[1][0] !== parsed.data[7][0] || parsed.data[2][0] !== parsed.data[8][0] || parsed.data[3][0] !== parsed.data[9][0]) { 
+        if (parsed.data[0]["Date"] !== parsed.data[6]["Date"] || parsed.data[1]["Date"] !== parsed.data[7]["Date"]) { 
 
           document.getElementById("header-title").innerText = `ПЕРВАЯ СМЕНА (${parseInt(day)} ${monthNames[parseInt(month)]})`; 
 
         } 
 
  
+
+        // Load and display table 
 
         let newTableHtml = generateTable(parsed.data); 
 
@@ -354,11 +358,93 @@
 
  
 
-    function updateTime() { 
+    function generateTable(data) { 
 
-      let now = new Date(); 
+      if (data.length === 0) return "<p>No data found</p>"; 
 
-      document.getElementById("time-display").innerText = `ВРЕМЯ: ${now.toLocaleTimeString("ru-RU", { hour: '2-digit', minute: '2-digit' })}, ${now.toLocaleDateString("ru-RU")}`; 
+ 
+
+      let table = `<table><thead><tr>`; 
+
+      let headers = Object.keys(data[0]).filter(header => header !== "Date"); 
+
+      headers.forEach(header => table += `<th>${header}</th>`); 
+
+      table += `</tr></thead><tbody>`; 
+
+ 
+
+      data.forEach(row => { 
+
+        table += `<tr>`; 
+
+        headers.forEach((key, index) => { 
+
+          let cell = row[key]; 
+
+          let cellClass = ""; 
+
+ 
+
+          if (index === 3) { 
+
+            let planValue = parseInt(row[headers[2]], 10); 
+
+            let factValue = parseInt(cell, 10); 
+
+            if (!isNaN(planValue) && !isNaN(factValue)) { 
+
+              cellClass = factValue < planValue ? "fact-low" : factValue > planValue ? "fact-high" : ""; 
+
+            } 
+
+          } 
+
+ 
+
+          if (index === 6) { 
+
+            let idleValue = parseInt(cell, 10); 
+
+            if (!isNaN(idleValue)) { 
+
+              cellClass = idleValue === 0 ? "idle-low" : idleValue > 5 ? "idle-high" : ""; 
+
+            } 
+
+          } 
+
+ 
+
+          if (index === 7) { 
+
+            let returnValue = parseInt(cell, 10); 
+
+            if (!isNaN(returnValue)) { 
+
+              cellClass = returnValue === 0 ? "return-low" : returnValue >= 3 ? "return-high" : ""; 
+
+            } 
+
+          } 
+
+ 
+
+          table += `<td class="${cellClass}">${cell}</td>`; 
+
+        }); 
+
+ 
+
+        table += `</tr>`; 
+
+      }); 
+
+ 
+
+      table += `</tbody></table>`; 
+
+      return table; 
 
     } 
 
@@ -368,7 +454,7 @@
 
     document.getElementById('fetch').addEventListener('click', () => loadCsv("manual")); 
 
-    setInterval(() => loadCsv("auto"), 60000); 
+    setInterval(() => loadCsv("auto"), 300000); 
 
   </script> 
 
