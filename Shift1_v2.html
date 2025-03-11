@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 
-  <title>Первая Смена</title> 
+  <title>Shift1 Overall</title> 
 
  
 
@@ -150,7 +150,7 @@
 
       color: #d3d3d3; 
 
-      width: 12.5%; 
+      width: 11.11%; 
 
       font-weight: normal; 
 
@@ -186,54 +186,6 @@
 
  
 
-    .fact-low { 
-
-      color: red; 
-
-    } 
-
- 
-
-    .fact-high { 
-
-      color: limegreen; 
-
-    } 
-
- 
-
-    .idle-low { 
-
-      color: limegreen; 
-
-    } 
-
- 
-
-    .idle-high { 
-
-      color: red; 
-
-    } 
-
- 
-
-    .return-low { 
-
-      color: limegreen; 
-
-    } 
-
- 
-
-    .return-high { 
-
-      color: red; 
-
-    } 
-
- 
-
     #time-display { 
 
       font-size: 32px; 
@@ -262,7 +214,7 @@
 
  
 
-  <h1>Первая Смена</h1> 
+  <h1 id="header-title">Первая Смена</h1> 
 
  
 
@@ -295,6 +247,16 @@
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTHueh6aJe84zabgRcUtkC0TuHek2zba1Rj_1V7jWM4hp-iEZCl1ZFkNckcFONjIdi2hR4Ike2xXQTt/pub?output=csv"; 
 
     let lastTableHtml = ""; 
+
+ 
+
+    const monthNames = [ 
+
+      "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", 
+
+      "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря" 
+
+    ]; 
 
  
 
@@ -344,6 +306,10 @@
 
         document.getElementById("csvTable").innerHTML = lastTableHtml; 
 
+         
+
+        checkAndUpdateHeader(parsed.data); 
+
         updateTime(); 
 
  
@@ -386,7 +352,9 @@
 
         "ПРОСТОЙ<br>(МИНУТ)", 
 
-        "ВОЗВРАТ<br>(ШТУК)" 
+        "ВОЗВРАТ<br>(ШТУК)", 
+
+        "DD<br>MM<br>YYYY" 
 
       ]; 
 
@@ -402,67 +370,13 @@
 
         let values = Object.values(row); 
 
-        values = values.slice(0, 8); 
+        values = values.slice(0, 9);  
 
  
 
-        values.forEach((cell, index) => { 
+        values.forEach(cell => { 
 
-          let cellClass = ""; 
-
- 
-
-          if (index === 3) { 
-
-            let planValue = parseInt(values[2], 10); 
-
-            let factValue = parseInt(cell, 10); 
-
-            if (!isNaN(planValue) && !isNaN(factValue)) { 
-
-              if (factValue < planValue) cellClass = "fact-low"; 
-
-              else if (factValue > planValue) cellClass = "fact-high"; 
-
-            } 
-
-          } 
-
- 
-
-          if (index === 6) { 
-
-            let idleValue = parseInt(cell, 10); 
-
-            if (!isNaN(idleValue)) { 
-
-              if (idleValue === 0) cellClass = "idle-low"; 
-
-              else if (idleValue > 5) cellClass = "idle-high"; 
-
-            } 
-
-          } 
-
- 
-
-          if (index === 7) { 
-
-            let returnValue = parseInt(cell, 10); 
-
-            if (!isNaN(returnValue)) { 
-
-              if (returnValue === 0) cellClass = "return-low"; 
-
-              else if (returnValue >= 3) cellClass = "return-high"; 
-
-            } 
-
-          } 
-
- 
-
-          table += `<td class="${cellClass}">${cell}</td>`; 
+          table += `<td>${cell}</td>`; 
 
         }); 
 
@@ -477,6 +391,46 @@
       table += `</tbody></table>`; 
 
       return table; 
+
+    } 
+
+ 
+
+    function checkAndUpdateHeader(data) { 
+
+      if (data.length === 0) return; 
+
+ 
+
+      let lastRow = data[data.length - 1]; 
+
+      let sheetDate = lastRow[8];  
+
+      let [day, month, year] = sheetDate.split(".").map(Number); 
+
+ 
+
+      let today = new Date(); 
+
+      let todayDay = today.getDate(); 
+
+      let todayMonth = today.getMonth() + 1; 
+
+      let todayYear = today.getFullYear(); 
+
+ 
+
+      if (day !== todayDay || month !== todayMonth || year !== todayYear) { 
+
+        let formattedDate = `${day} ${monthNames[month - 1]}`; 
+
+        document.getElementById("header-title").innerText = `ПЕРВАЯ СМЕНА (${formattedDate})`; 
+
+      } else { 
+
+        document.getElementById("header-title").innerText = "ПЕРВАЯ СМЕНА"; 
+
+      } 
 
     } 
 
