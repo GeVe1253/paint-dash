@@ -173,7 +173,8 @@
 
     function getColorClass(index, row, cell) {
       if (index === 3) { // ФАКТ (КУЗОВОВ)
-        let plan = parseInt(row[headers[2]], 10), fact = parseInt(cell, 10);
+        let plan = parseInt(row[headers[2]], 10);
+        let fact = parseInt(cell, 10);
         return fact < plan ? "fact-low" : fact > plan ? "fact-high" : "";
       }
       if (index === 6) { // ПРОСТОЙ (МИНУТ)
