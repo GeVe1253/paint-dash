@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 
-  <title>Shift1 Overview</title> 
+  <title>Первая Смена</title> 
 
  
 
@@ -59,18 +59,6 @@
       width: 100%; 
 
       font-weight: normal; 
-
-    } 
-
- 
-
-    #date-display { 
-
-      font-size: 28px; 
-
-      color: #d3d3d3; 
-
-      margin: 10px 0; 
 
     } 
 
@@ -148,6 +136,8 @@
 
       height: 65vh; 
 
+      table-layout: fixed; 
+
     } 
 
  
@@ -165,6 +155,10 @@
       width: 12.5%; 
 
       font-weight: normal; 
+
+      overflow: hidden; 
+
+      white-space: nowrap; 
 
     } 
 
@@ -193,6 +187,54 @@
     tbody tr:hover { 
 
       background-color: #383a40; 
+
+    } 
+
+ 
+
+    .fact-low { 
+
+      color: red; 
+
+    } 
+
+ 
+
+    .fact-high { 
+
+      color: limegreen; 
+
+    } 
+
+ 
+
+    .idle-low { 
+
+      color: limegreen; 
+
+    } 
+
+ 
+
+    .idle-high { 
+
+      color: red; 
+
+    } 
+
+ 
+
+    .return-low { 
+
+      color: limegreen; 
+
+    } 
+
+ 
+
+    .return-high { 
+
+      color: red; 
 
     } 
 
@@ -272,37 +314,17 @@
 
  
 
-    function showReloadingText(type) { 
-
-      document.getElementById("reload-text").innerText = type === "manual" ? "Reloading..." : "Updating..."; 
-
-      document.getElementById("reload-text").style.display = "block";  
-
-    } 
-
- 
-
-    function hideReloadingText() { 
-
-      setTimeout(() => { 
-
-        document.getElementById("reload-text").style.display = "none";  
-
-      }, 500); 
-
-    } 
-
- 
-
     async function loadCsv(type) { 
 
       try { 
 
-        showReloadingText(type); 
+        document.getElementById("reload-text").innerText = type === "manual" ? "Reloading..." : "Updating..."; 
+
+        document.getElementById("reload-text").style.display = "block"; 
 
  
 
-        const response = await fetch(`${csvUrl}&_=${new Date().getTime()}`);  
+        const response = await fetch(`${csvUrl}&_=${new Date().getTime()}`); 
 
         if (!response.ok) throw new Error("Network response was not ok: " + response.status); 
 
@@ -311,8 +333,6 @@
         const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true }); 
 
  
-
-        // Extract Date Information 
 
         const dateRow = parsed.data.find(row => row["Date"]); 
 
@@ -330,17 +350,7 @@
 
             const formattedDate = `${day} ${monthNames[monthIndex]}`; 
 
-            const today = new Date(); 
-
-            const todayFormatted = `${today.getDate().toString().padStart(2, "0")}.${(today.getMonth() + 1).toString().padStart(2, "0")}.${today.getFullYear()}`; 
-
- 
-
-            if (`${day}.${monthIndex + 1}.${year}` !== todayFormatted) { 
-
-              document.getElementById("main-title").innerText = `Первая Смена (${formattedDate})`; 
-
-            } 
+            document.getElementById("main-title").innerText = `Первая Смена (${formattedDate})`; 
 
           } 
 
@@ -354,17 +364,13 @@
 
         document.getElementById("csvTable").innerHTML = lastTableHtml; 
 
-        updateTime(); 
-
- 
-
       } catch (error) { 
 
         console.error(error); 
 
       } finally { 
 
-        hideReloadingText(); 
+        document.getElementById("reload-text").style.display = "none"; 
 
       } 
 
@@ -373,10 +379,6 @@
  
 
     function generateTable(data) { 
-
-      if (data.length === 0) return "<p>No data found</p>"; 
-
- 
 
       let headers = Object.keys(data[0]).filter(key => key !== "Date"); 
 
@@ -394,9 +396,53 @@
 
         table += `<tr>`; 
 
-        headers.forEach(key => { 
+        headers.forEach((key, index) => { 
 
-          table += `<td>${row[key]}</td>`; 
+          let cell = row[key]; 
+
+          let cellClass = ""; 
+
+ 
+
+          if (index === 3) { 
+
+            let planValue = parseInt(row[headers[2]], 10); 
+
+            let factValue = parseInt(cell, 10); 
+
+            if (factValue < planValue) cellClass = "fact-low"; 
+
+            else if (factValue > planValue) cellClass = "fact-high"; 
+
+          } 
+
+ 
+
+          if (index === 6) { 
+
+            let idleValue = parseInt(cell, 10); 
+
+            if (idleValue === 0) cellClass = "idle-low"; 
+
+            else if (idleValue > 5) cellClass = "idle-high"; 
+
+          } 
+
+ 
+
+          if (index === 7) { 
+
+            let returnValue = parseInt(cell, 10); 
+
+            if (returnValue === 0) cellClass = "return-low"; 
+
+            else if (returnValue >= 3) cellClass = "return-high"; 
+
+          } 
+
+ 
+
+          table += `<td class="${cellClass}">${cell}</td>`; 
 
         }); 
 
@@ -409,16 +455,6 @@
       table += `</tbody></table>`; 
 
       return table; 
-
-    } 
-
- 
-
-    function updateTime() { 
-
-      let now = new Date(); 
-
-      document.getElementById("time-display").innerText = `ВРЕМЯ: ${now.toLocaleTimeString("ru-RU", { hour: '2-digit', minute: '2-digit' })}, ${now.toLocaleDateString("ru-RU")}`; 
 
     } 
 
