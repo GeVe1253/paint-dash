@@ -6,7 +6,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 
-  <title>Первая Смена</title> 
+  <title>Shift 1 Overall</title> 
 
  
 
@@ -22,7 +22,7 @@
 
       margin: 0; 
 
-      padding: 20px; 
+      padding: 0; 
 
       text-align: center; 
 
@@ -34,23 +34,27 @@
 
       height: 100vh; 
 
+      overflow: hidden; 
+
     } 
 
  
 
     h1 { 
 
-      color: #c0c0c0; 
+      color: #ffffff; 
 
-      margin: 10px 0 0 0; 
+      font-size: 32px; 
 
-      font-size: 24px; 
+      text-transform: uppercase; 
 
-      position: absolute; 
+      background-color: #42444a; 
 
-      top: 10px; 
+      padding: 15px 0; 
 
-      left: 20px; 
+      margin: 0; 
+
+      width: 100%; 
 
     } 
 
@@ -60,9 +64,9 @@
 
       position: absolute; 
 
-      top: 10px; 
+      top: 15px; 
 
-      right: 10px; 
+      right: 20px; 
 
       background-color: #444; 
 
@@ -70,13 +74,13 @@
 
       border: 1px solid #666; 
 
-      padding: 6px 12px; 
+      padding: 8px 16px; 
 
       border-radius: 4px; 
 
       cursor: pointer; 
 
-      font-size: 12px; 
+      font-size: 14px; 
 
     } 
 
@@ -100,7 +104,9 @@
 
       margin-top: 10px; 
 
-      font-size: 18px; 
+      font-size: 24px; 
+
+      height: 65vh; 
 
     } 
 
@@ -110,7 +116,7 @@
 
       border: 1px solid #555; 
 
-      padding: 10px; 
+      padding: 15px; 
 
       text-align: center; 
 
@@ -128,7 +134,9 @@
 
       text-transform: uppercase; 
 
-      font-size: 20px; 
+      font-size: 22px; 
+
+      padding: 10px; 
 
     } 
 
@@ -152,13 +160,19 @@
 
     #time-display { 
 
-      font-size: 24px; 
+      font-size: 32px; 
 
-      color: #c0c0c0; 
+      text-transform: uppercase; 
+
+      color: #ffffff; 
+
+      background-color: #42444a; 
+
+      padding: 15px 0; 
 
       margin-top: auto; 
 
-      padding-top: 10px; 
+      width: 100%; 
 
     } 
 
@@ -171,6 +185,8 @@
  
 
   <h1>Первая Смена</h1> 
+
+ 
 
   <button id="fetch">Reload</button> 
 
@@ -206,7 +222,25 @@
 
       let table = `<table><thead><tr>`; 
 
-      let headers = ["Время", "Доступно(мин)", "План(шт)", "Факт(шт)", "Такт(мин)", "Буфер(шт)", "Простой(мин)", "Возврат(шт)"]; 
+      let headers = [ 
+
+        "ВРЕМЯ", 
+
+        "ДОСТУПНО<br>(МИНУТ)", 
+
+        "ПЛАН<br>(ШТУК)", 
+
+        "ФАКТ<br>(ШТУК)", 
+
+        "ТАКТ<br>(МИНУТ)", 
+
+        "БУФЕР<br>(ШТУК)", 
+
+        "ПРОСТОЙ<br>(МИНУТ)", 
+
+        "ВОЗВРАТ<br>(ШТУК)" 
+
+      ]; 
 
       headers.forEach(header => table += `<th>${header}</th>`); 
 
@@ -242,7 +276,7 @@
 
       try { 
 
-        const response = await fetch(`${csvUrl}&_=${new Date().getTime()}`); // Prevent caching 
+        const response = await fetch(`${csvUrl}&_=${new Date().getTime()}`);  
 
         if (!response.ok) throw new Error("Network response was not ok: " + response.status); 
 
@@ -274,7 +308,7 @@
 
       let now = new Date(); 
 
-      let formattedTime = `Время: ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}, ${now.getDate().toString().padStart(2, '0')}.${(now.getMonth() + 1).toString().padStart(2, '0')}.${now.getFullYear()}`; 
+      let formattedTime = `ВРЕМЯ: ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}, ${now.getDate().toString().padStart(2, '0')}.${(now.getMonth() + 1).toString().padStart(2, '0')}.${now.getFullYear()}`; 
 
       document.getElementById("time-display").innerText = formattedTime; 
 
