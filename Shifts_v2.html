@@ -115,6 +115,7 @@
 
         table += "<tr>";
         Object.keys(row).forEach((key, index) => {
+          if (key.toLowerCase().includes("date")) return; //hide date column
           let mainValue = row[key];
           let otherValue = otherRow ? otherRow[key] : "";
           let comparisonText = "";
