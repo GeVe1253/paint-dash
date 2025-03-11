@@ -1,465 +1,210 @@
-<!DOCTYPE html> 
-
-<html lang="ru"> 
-
-<head> 
-
-  <meta charset="UTF-8"> 
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-
-  <title>Первая Смfена</title> 
-
- 
-
-  <style> 
-
-    body { 
-
-      background-color: #202124; 
-
-      color: #d3d3d3; 
-
-      font-family: Arial, sans-serif; 
-
-      margin: 0; 
-
-      padding: 0; 
-
-      text-align: center; 
-
-      display: flex; 
-
-      flex-direction: column; 
-
-      justify-content: space-between; 
-
-      height: 100vh; 
-
-      overflow: hidden; 
-
-    } 
-
- 
-
-    h1 { 
-
-      color: #c0c0c0; 
-
-      font-size: 38px; 
-
-      text-transform: uppercase; 
-
-      background-color: #42444a; 
-
-      padding: 12px 0; 
-
-      margin: 0; 
-
-      width: 100%; 
-
-      font-weight: normal; 
-
-    } 
-
- 
-
-    #reload-container { 
-
-      position: absolute; 
-
-      top: 15px; 
-
-      right: 20px; 
-
-      display: flex; 
-
-      align-items: center; 
-
-    } 
-
- 
-
-    #reload-text { 
-
-      color: #d3d3d3; 
-
-      font-size: 18px; 
-
-      margin-right: 10px; 
-
-      display: none; 
-
-    } 
-
- 
-
-    #fetch { 
-
-      background-color: #2e2f33; 
-
-      color: #d3d3d3; 
-
-      border: 1px solid #666; 
-
-      padding: 8px 14px; 
-
-      border-radius: 4px; 
-
-      cursor: pointer; 
-
-      font-size: 18px; 
-
-    } 
-
- 
-
-    #fetch:hover { 
-
-      background-color: #383a40; 
-
-    } 
-
- 
-
-    table { 
-
-      width: 100%; 
-
-      border-collapse: collapse; 
-
-      background-color: #292a2d; 
-
-      margin-top: 10px; 
-
-      font-size: 22px; 
-
-      height: 65vh; 
-
-    } 
-
- 
-
-    th, td { 
-
-      border: 1px solid #555; 
-
-      padding: 18px; 
-
-      text-align: center; 
-
-      color: #d3d3d3; 
-
-      width: 12.5%; 
-
-      font-weight: normal; 
-
-    } 
-
- 
-
-    th { 
-
-      background-color: #42444a; 
-
-      text-transform: uppercase; 
-
-      font-size: 22px; 
-
-    } 
-
- 
-
-    tbody tr:nth-child(even) { 
-
-      background-color: #2e2f33; 
-
-    } 
-
- 
-
-    tbody tr:hover { 
-
-      background-color: #383a40; 
-
-    } 
-
- 
-
-    .fact-low { 
-
-      color: red; 
-
-    } 
-
- 
-
-    .fact-high { 
-
-      color: limegreen; 
-
-    } 
-
- 
-
-    .idle-low { 
-
-      color: limegreen; 
-
-    } 
-
- 
-
-    .idle-high { 
-
-      color: red; 
-
-    } 
-
- 
-
-    .return-low { 
-
-      color: limegreen; 
-
-    } 
-
- 
-
-    .return-high { 
-
-      color: red; 
-
-    } 
-
- 
-
-    #time-display { 
-
-      font-size: 32px; 
-
-      text-transform: uppercase; 
-
-      color: #c0c0c0; 
-
-      background-color: #42444a; 
-
-      padding: 12px 0; 
-
-      margin-top: auto; 
-
-      width: 100%; 
-
-      font-weight: normal; 
-
-    } 
-
-  </style> 
-
-</head> 
-
-<body> 
-
- 
-
-  <h1 id="header-title">Первая Смена</h1> 
-
- 
-
-  <div id="reload-container"> 
-
-    <span id="reload-text">Updating...</span> 
-
-    <button id="fetch">Reload</button> 
-
-  </div> 
-
- 
-
-  <section id="csvTable"> 
-
-    <p>Loading data...</p> 
-
-  </section> 
-
- 
-
-  <div id="time-display">ВРЕМЯ: --:--, --.--.----</div> 
-
- 
-
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script> 
-
-  <script> 
-
-    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTHueh6aJe84zabgRcUtkC0TuHek2zba1Rj_1V7jWM4hp-iEZCl1ZFkNckcFONjIdi2hR4Ike2xXQTt/pub?output=csv"; 
-
-    const monthNames = ["", "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"]; 
-
- 
-
-    async function loadCsv(type) { 
-
-      try { 
-
-        document.getElementById("reload-text").innerText = type === "manual" ? "Reloading..." : "Updating..."; 
-
-        document.getElementById("reload-text").style.display = "block";  
-
- 
-
-        const response = await fetch(`${csvUrl}&_=${new Date().getTime()}`);  
-
-        if (!response.ok) throw new Error("Network response was not ok: " + response.status); 
-
-        const csvText = await response.text(); 
-
-        const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true }); 
-
- 
-
-        // Extract and check date 
-
-        const day = parsed.data[0]["Date"]?.padStart(2, "0"); 
-
-        const month = parsed.data[1]["Date"]?.padStart(2, "0"); 
-
- 
-
-        if (parsed.data[0]["Date"] !== parsed.data[6]["Date"] || parsed.data[1]["Date"] !== parsed.data[7]["Date"]) { 
-
-          document.getElementById("header-title").innerText = `ПЕРВАЯ СМЕНА (${parseInt(day)} ${monthNames[parseInt(month)]})`; 
-
-        } 
-
- 
-
-        // Load and display table 
-
-        let newTableHtml = generateTable(parsed.data); 
-
-        document.getElementById("csvTable").innerHTML = newTableHtml; 
-
-        updateTime(); 
-
- 
-
-      } catch (error) { 
-
-        console.error(error); 
-
-      } finally { 
-
-        setTimeout(() => document.getElementById("reload-text").style.display = "none", 500); 
-
-      } 
-
-    } 
-
- 
-
-    function generateTable(data) { 
-
-      if (data.length === 0) return "<p>No data found</p>"; 
-
- 
-
-      let table = `<table><thead><tr>`; 
-
-      let headers = Object.keys(data[0]).filter(header => header !== "Date"); 
-
-      headers.forEach(header => table += `<th>${header}</th>`); 
-
-      table += `</tr></thead><tbody>`; 
-
- 
-
-      data.forEach(row => { 
-
-        table += `<tr>`; 
-
-        headers.forEach((key, index) => { 
-
-          let cell = row[key]; 
-
-          let cellClass = ""; 
-
- 
-
-          if (index === 3) { 
-
-            let planValue = parseInt(row[headers[2]], 10); 
-
-            let factValue = parseInt(cell, 10); 
-
-            if (!isNaN(planValue) && !isNaN(factValue)) { 
-
-              cellClass = factValue < planValue ? "fact-low" : factValue > planValue ? "fact-high" : ""; 
-
-            } 
-
-          } 
-
- 
-
-          if (index === 6) { 
-
-            let idleValue = parseInt(cell, 10); 
-
-            if (!isNaN(idleValue)) { 
-
-              cellClass = idleValue === 0 ? "idle-low" : idleValue > 5 ? "idle-high" : ""; 
-
-            } 
-
-          } 
-
- 
-
-          if (index === 7) { 
-
-            let returnValue = parseInt(cell, 10); 
-
-            if (!isNaN(returnValue)) { 
-
-              cellClass = returnValue === 0 ? "return-low" : returnValue >= 3 ? "return-high" : ""; 
-
-            } 
-
-          } 
-
- 
-
-          table += `<td class="${cellClass}">${cell}</td>`; 
-
-        }); 
-
- 
-
-        table += `</tr>`; 
-
-      }); 
-
- 
-
-      table += `</tbody></table>`; 
-
-      return table; 
-
-    } 
-
- 
-
-    window.addEventListener('DOMContentLoaded', () => loadCsv("auto")); 
-
-    document.getElementById('fetch').addEventListener('click', () => loadCsv("manual")); 
-
-    setInterval(() => loadCsv("auto"), 300000); 
-
-  </script> 
-
- 
-
-</body> 
-
-</html> 
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shift 1 Overview</title>
+
+  <style>
+    body {
+      background-color: #202124;
+      color: #c0c0c0;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 38px;
+      text-transform: uppercase;
+      background-color: #42444a;
+      padding: 12px 0;
+      margin: 0;
+      width: 100%;
+      font-weight: normal;
+    }
+
+    #reload-container {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    #reload-text {
+      font-size: 18px;
+      margin-right: 10px;
+      display: none;
+    }
+
+    #fetch {
+      background-color: #2e2f33;
+      border: 1px solid #666;
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    #fetch:hover {
+      background-color: #383a40;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #292a2d;
+      font-size: 22px;
+      height: 65vh;
+    }
+
+    th, td {
+      border: 1px solid #555;
+      padding: 18px;
+      text-align: center;
+      width: 12.5%;
+      font-weight: normal;
+    }
+
+    th {
+      background-color: #42444a;
+      text-transform: uppercase;
+      font-size: 22px;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #2e2f33;
+    }
+
+    tbody tr:hover {
+      background-color: #383a40;
+    }
+
+    .fact-low { color: red; }
+    .fact-high { color: limegreen; }
+    .idle-low { color: limegreen; }
+    .idle-high { color: red; }
+    .return-low { color: limegreen; }
+    .return-high { color: red; }
+
+    #time-display {
+      font-size: 32px;
+      text-transform: uppercase;
+      background-color: #42444a;
+      padding: 12px 0;
+      margin-top: auto;
+      width: 100%;
+      font-weight: normal;
+    }
+  </style>
+</head>
+<body>
+
+  <h1 id="header-title">Первая Смена</h1>
+
+  <div id="reload-container">
+    <span id="reload-text">Updating...</span>
+    <button id="fetch">Reload</button>
+  </div>
+
+  <section id="csvTable">
+    <p>Loading data...</p>
+  </section>
+
+  <div id="time-display">ВРЕМЯ: --:--, --.--.----</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script>
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTHueh6aJe84zabgRcUtkC0TuHek2zba1Rj_1V7jWM4hp-iEZCl1ZFkNckcFONjIdi2hR4Ike2xXQTt/pub?output=csv";
+    const monthNames = ["", "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"];
+    const headers = ["ВРЕМЯ", "ДОСТУПНО<br>(МИНУТ)", "ПЛАН<br>(КУЗОВОВ)", "ФАКТ<br>(КУЗОВОВ)", "ТАКТ<br>(МИНУТ)", "БУФЕР<br>(КУЗОВОВ)", "ПРОСТОЙ<br>(МИНУТ)", "ВОЗВРАТ<br>(КУЗОВОВ)"];
+
+    async function loadCsv(type) {
+      document.getElementById("reload-text").innerText = type === "manual" ? "Reloading..." : "Updating...";
+      document.getElementById("reload-text").style.display = "block";
+
+      try {
+        const response = await fetch(`${csvUrl}&_=${new Date().getTime()}`);
+        if (!response.ok) throw new Error("Network response was not ok: " + response.status);
+        const csvText = await response.text();
+        const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true }).data;
+
+        updateTitle(parsed);
+        document.getElementById("csvTable").innerHTML = generateTable(parsed);
+        updateTime();
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setTimeout(() => document.getElementById("reload-text").style.display = "none", 500);
+      }
+    }
+
+    function updateTitle(data) {
+      const day = data[0]["Date"]?.padStart(2, "0");
+      const month = data[1]["Date"]?.padStart(2, "0");
+      if (data[0]["Date"] !== data[6]["Date"] || data[1]["Date"] !== data[7]["Date"]) {
+        document.getElementById("header-title").innerText = `ПЕРВАЯ СМЕНА (${parseInt(day)} ${monthNames[parseInt(month)]})`;
+      }
+    }
+
+    function generateTable(data) {
+      let table = `<table><thead><tr>${headers.map(header => `<th>${header}</th>`).join('')}</tr></thead><tbody>`;
+
+      data.forEach(row => {
+        table += "<tr>";
+        Object.values(row).slice(0, 8).forEach((cell, index) => {
+          let cellClass = getColorClass(index, row, cell);
+          table += `<td class="${cellClass}">${cell}</td>`;
+        });
+        table += "</tr>";
+      });
+
+      return table + "</tbody></table>";
+    }
+
+    function getColorClass(index, row, cell) {
+      if (index === 3) { // ФАКТ (КУЗОВОВ)
+        let plan = parseInt(row[headers[2]], 10), fact = parseInt(cell, 10);
+        return fact < plan ? "fact-low" : fact > plan ? "fact-high" : "";
+      }
+      if (index === 6) { // ПРОСТОЙ (МИНУТ)
+        let idle = parseInt(cell, 10);
+        return idle === 0 ? "idle-low" : idle > 5 ? "idle-high" : "";
+      }
+      if (index === 7) { // ВОЗВРАТ (КУЗОВОВ)
+        let returned = parseInt(cell, 10);
+        return returned === 0 ? "return-low" : returned >= 3 ? "return-high" : "";
+      }
+      return "";
+    }
+
+    function updateTime() {
+      let now = new Date();
+      document.getElementById("time-display").innerText = `ВРЕМЯ: ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} ${now.getDate().toString().padStart(2, '0')}.${(now.getMonth() + 1).toString().padStart(2, '0')}.${now.getFullYear()}`;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadCsv("auto");
+      updateTime();
+    });
+
+    document.getElementById('fetch').addEventListener('click', () => {
+      loadCsv("manual");
+      updateTime();
+    });
+
+    setInterval(() => {
+      loadCsv("auto");
+      updateTime();
+    }, 60000);
+  </script>
+
+</body>
+</html>
