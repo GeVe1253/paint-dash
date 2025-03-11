@@ -1,24 +1,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>CSV Fetch Example</title>
+  <title>Shift 1 Overall</title>
   <!-- Load PapaParse from a CDN -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-</head>
-<body>
-  <h1>Load CSV from Published Google Sheet</h1>
-  <button onclick="loadCsv()">Fetch Data</button>
-  
-  <!-- Table Section -->
-  <section id="csvTable">
-    <p>Click "Fetch Data" to load CSV data into a neat table.</p>
-  </section>
 
   <script>
+    // Replace the link below with your published CSV link
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTHueh6aJe84zabgRcUtkC0TuHek2zba1Rj_1V7jWM4hp-iEZCl1ZFkNckcFONjIdi2hR4Ike2xXQTt/pub?output=csv";
+
     // Helper function to generate an HTML table from JSON data
     function generateTable(data) {
       if (data.length === 0) return "<p>No data found</p>";
-      
+
       let table = "<table border='1' style='border-collapse: collapse; width: 100%;'>";
       // Create the header row using the keys from the first row of data
       table += "<thead><tr>";
@@ -26,7 +20,7 @@
           table += `<th style="padding: 8px;">${key}</th>`;
       });
       table += "</tr></thead>";
-      
+
       // Create the table body rows
       table += "<tbody>";
       data.forEach(row => {
@@ -45,9 +39,6 @@
       document.getElementById("csvTable").innerHTML = "<p>Loading...</p>";
 
       try {
-        // Replace the link below with your published CSV link
-        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTHueh6aJe84zabgRcUtkC0TuHek2zba1Rj_1V7jWM4hp-iEZCl1ZFkNckcFONjIdi2hR4Ike2xXQTt/pub?output=csv";
-        
         // 1. Fetch the CSV text
         const response = await fetch(csvUrl);
         if (!response.ok) {
@@ -71,5 +62,14 @@
       }
     }
   </script>
+</head>
+<body>
+  <h1>Load CSV from Published Google Sheet</h1>
+  <button onclick="loadCsv()">Fetch Data</button>
+  
+  <!-- Table Section -->
+  <section id="csvTable">
+    <p>Click "Fetch Data" to load CSV data into a neat table.</p>
+  </section>
 </body>
 </html>
