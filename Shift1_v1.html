@@ -242,7 +242,7 @@
 
       try { 
 
-        const response = await fetch(csvUrl); 
+        const response = await fetch(`${csvUrl}&_=${new Date().getTime()}`); // Prevent caching 
 
         if (!response.ok) throw new Error("Network response was not ok: " + response.status); 
 
