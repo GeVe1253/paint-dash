@@ -1,1 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Первая Смена</title>
 
+  <style>
+    body {
+      background-color: #202124;
+      color: #d3d3d3;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    h1 {
+      color: #c0c0c0;
+      font-size: 36px;
+      text-transform: uppercase;
+      background-color: #42444a;
+      padding: 15px 0;
+      margin: 0;
+      width: 100%;
+      font-weight: normal;
+    }
+
+    #fetch {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background-color: #2e2f33;
+      color: #d3d3d3;
+      border: 1px solid #666;
+      padding: 10px 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    #fetch:hover {
+      background-color: #383a40;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #292a2d;
+      margin-top: 10px;
+      font-size: 28px;
+      height: 65vh;
+    }
+
+    th, td {
+      border: 1px solid #555;
+      padding: 20px;
+      text-align: center;
+      color: #d3d3d3;
+      width: 12.5%;
+      font-weight: normal;
+    }
+
+    th {
+      background-color: #42444a;
+      text-transform: uppercase;
+      font-size: 26px;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #2e2f33;
+    }
+
+    tbody tr:hover {
+      background-color: #383a40;
+    }
+
+    #time-display {
+      font-size: 36px;
+      text-transform: uppercase;
+      color: #c0c0c0;
+      background-color: #42444a;
+      padding: 15px 0;
+      margin-top: auto;
+      width: 100%;
+      font-weight: normal;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Первая Смена</h1>
+
+  <button id="fetch">Reload</button>
+
+  <section id="csvTable">
+    <p>Loading data...</p>
+  </section>
+
+  <div id="time-display">Время: --:--, --.--.----</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script>
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTHueh6aJe84zabgRcUtkC0TuHek2zba1Rj_1V7jWM4hp-iEZCl1ZFkNckcFONjIdi2hR4Ike2xXQTt/pub?output=csv";
+    let lastTableHtml = "";
+
+    function generateTable(data) {
+      if (data.length === 0) return "<p>No data found</p>";
+
+      let table = `<table><thead><tr>`;
+      let headers = [
+        "ВРЕМЯ",
+        "ДОСТУПНО<br>(МИНУТ)",
+        "ПЛАН<br>(ШТУК)",
+        "ФАКТ<br>(ШТУК)",
+        "ТАКТ<br>(МИНУТ)",
+        "БУФЕР<br>(ШТУК)",
+        "ПРОСТОЙ<br>(МИНУТ)",
+        "ВОЗВРАТ<br>(ШТУК)"
+      ];
+      headers.forEach(header => table += `<th>${header}</th>`);
+      table += `</tr></thead><tbody>`;
+
+      data.forEach(row => {
+        table += `<tr>`;
+        let values = Object.values(row);
+        values = values.slice(0, 8);
+        values.forEach(cell => table += `<td>${cell}</td>`);
+        table += `</tr>`;
+      });
+
+      table += `</tbody></table>`;
+      return table;
+    }
+
+    async function loadCsv() {
+      try {
+        const response = await fetch(`${csvUrl}&_=${new Date().getTime()}`); 
+        if (!response.ok) throw new Error("Network response was not ok: " + response.status);
+        const csvText = await response.text();
+        const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+
+        let newTableHtml = generateTable(parsed.data);
+        if (newTableHtml) lastTableHtml = newTableHtml;
+        document.getElementById("csvTable").innerHTML = lastTableHtml;
+        updateTime();
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    function updateTime() {
+      let now = new Date();
+      let formattedTime = `ВРЕМЯ: ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}, ${now.getDate().toString().padStart(2, '0')}.${(now.getMonth() + 1).toString().padStart(2, '0')}.${now.getFullYear()}`;
+      document.getElementById("time-display").innerText = formattedTime;
+    }
+
+    window.addEventListener('DOMContentLoaded', loadCsv);
+    document.getElementById('fetch').addEventListener('click', loadCsv);
+    setInterval(loadCsv, 300000);
+  </script>
+
+</body>
+</html>
