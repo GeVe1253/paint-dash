@@ -147,7 +147,7 @@
     const monthNames = ["", "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"];
     const headers = ["ВРЕМЯ", "ДОСТУПНО<br>(МИНУТ)", "ПЛАН<br>(КУЗОВОВ)", "ФАКТ<br>(КУЗОВОВ)", "ТАКТ<br>(МИНУТ)", "БУФЕР<br>(КУЗОВОВ)", "ПРОСТОЙ<br>(МИНУТ)", "ВОЗВРАТ<br>(КУЗОВОВ)"];
 
-    let currentView = 1;
+    let currentView = 3;
     let shiftData = {};
 
     async function loadCsv(shift) {
@@ -213,7 +213,7 @@
     }
 
     function toggleView() {
-      currentView = 3 //currentView === 3 ? 1 : currentView + 1;
+      currentView = //currentView === 3 ? 1 : currentView + 1;
       updateDisplay(currentView);
     }
 
