@@ -282,6 +282,70 @@
 
  
 
+    function showReloadingText(type) { 
+
+      document.getElementById("reload-text").innerText = type === "manual" ? "Reloading..." : "Updating..."; 
+
+      document.getElementById("reload-text").style.display = "block";  
+
+    } 
+
+ 
+
+    function hideReloadingText() { 
+
+      setTimeout(() => { 
+
+        document.getElementById("reload-text").style.display = "none";  
+
+      }, 500); 
+
+    } 
+
+ 
+
+    async function loadCsv(type) { 
+
+      try { 
+
+        showReloadingText(type); 
+
+ 
+
+        const response = await fetch(`${csvUrl}&_=${new Date().getTime()}`);  
+
+        if (!response.ok) throw new Error("Network response was not ok: " + response.status); 
+
+        const csvText = await response.text(); 
+
+        const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true }); 
+
+ 
+
+        let newTableHtml = generateTable(parsed.data); 
+
+        if (newTableHtml) lastTableHtml = newTableHtml; 
+
+        document.getElementById("csvTable").innerHTML = lastTableHtml; 
+
+        updateTime(); 
+
+ 
+
+      } catch (error) { 
+
+        console.error(error); 
+
+      } finally { 
+
+        hideReloadingText(); 
+
+      } 
+
+    } 
+
+ 
+
     function generateTable(data) { 
 
       if (data.length === 0) return "<p>No data found</p>"; 
@@ -332,25 +396,17 @@
 
  
 
-          if (index === 3) { // Column 4 - "ФАКТ" 
+          if (index === 3) { 
 
-            let planValue = parseInt(values[2], 10); // Column 3 - "ПЛАН" 
+            let planValue = parseInt(values[2], 10); 
 
             let factValue = parseInt(cell, 10); 
 
- 
-
             if (!isNaN(planValue) && !isNaN(factValue)) { 
 
-              if (factValue < planValue) { 
+              if (factValue < planValue) cellClass = "fact-low"; 
 
-                cellClass = "fact-low"; 
-
-              } else if (factValue > planValue) { 
-
-                cellClass = "fact-high"; 
-
-              } 
+              else if (factValue > planValue) cellClass = "fact-high"; 
 
             } 
 
@@ -358,23 +414,15 @@
 
  
 
-          if (index === 6) { // Column 7 - "ПРОСТОЙ" 
+          if (index === 6) { 
 
             let idleValue = parseInt(cell, 10); 
 
- 
-
             if (!isNaN(idleValue)) { 
 
-              if (idleValue === 0) { 
+              if (idleValue === 0) cellClass = "idle-low"; 
 
-                cellClass = "idle-low"; 
-
-              } else if (idleValue > 5) { 
-
-                cellClass = "idle-high"; 
-
-              } 
+              else if (idleValue > 5) cellClass = "idle-high"; 
 
             } 
 
@@ -402,52 +450,6 @@
 
  
 
-    async function loadCsv() { 
-
-      try { 
-
-        document.getElementById("reload-text").style.display = "block";  
-
- 
-
-        const response = await fetch(`${csvUrl}&_=${new Date().getTime()}`);  
-
-        if (!response.ok) throw new Error("Network response was not ok: " + response.status); 
-
-        const csvText = await response.text(); 
-
-        const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true }); 
-
- 
-
-        let newTableHtml = generateTable(parsed.data); 
-
-        if (newTableHtml) lastTableHtml = newTableHtml; 
-
-        document.getElementById("csvTable").innerHTML = lastTableHtml; 
-
-        updateTime(); 
-
- 
-
-      } catch (error) { 
-
-        console.error(error); 
-
-      } finally { 
-
-        setTimeout(() => { 
-
-          document.getElementById("reload-text").style.display = "none";  
-
-        }, 500); 
-
-      } 
-
-    } 
-
- 
-
     function updateTime() { 
 
       let now = new Date(); 
@@ -460,11 +462,11 @@
 
  
 
-    window.addEventListener('DOMContentLoaded', loadCsv); 
+    window.addEventListener('DOMContentLoaded', () => loadCsv("auto")); 
 
-    document.getElementById('fetch').addEventListener('click', loadCsv); 
+    document.getElementById('fetch').addEventListener('click', () => loadCsv("manual")); 
 
-    setInterval(loadCsv, 300000); 
+    setInterval(() => loadCsv("auto"), 300000); 
 
   </script> 
 
@@ -473,6 +475,3 @@
 </body> 
 
 </html> 
-
-</body>
-</html>
