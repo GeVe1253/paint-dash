@@ -1,225 +1,509 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shift 1 Overall</title>
+<!DOCTYPE html> 
 
-  <style>
-    body {
-      background-color: #202124;
-      color: #d3d3d3;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      height: 100vh;
-      overflow: hidden;
-    }
+<html lang="ru"> 
 
-    h1 {
-      color: #c0c0c0;
-      font-size: 38px;
-      text-transform: uppercase;
-      background-color: #42444a;
-      padding: 12px 0;
-      margin: 0;
-      width: 100%;
-      font-weight: normal;
-    }
+<head> 
 
-    #reload-container {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      display: flex;
-      align-items: center;
-    }
+  <meta charset="UTF-8"> 
 
-    #reload-text {
-      color: #d3d3d3;
-      font-size: 18px;
-      margin-right: 10px;
-      display: none;
-    }
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 
-    #fetch {
-      background-color: #2e2f33;
-      color: #d3d3d3;
-      border: 1px solid #666;
-      padding: 8px 14px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 18px;
-    }
+  <title>Первая Смена</title> 
 
-    #fetch:hover {
-      background-color: #383a40;
-    }
+ 
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: #292a2d;
-      margin-top: 10px;
-      font-size: 22px;
-      height: 65vh;
-    }
+  <style> 
 
-    th, td {
-      border: 1px solid #555;
-      padding: 18px;
-      text-align: center;
-      color: #d3d3d3;
-      font-weight: normal;
-    }
+    body { 
 
-    th {
-      background-color: #42444a;
-      text-transform: uppercase;
-      font-size: 22px;
-    }
+      background-color: #202124; 
 
-    tbody tr:nth-child(even) {
-      background-color: #2e2f33;
-    }
+      color: #d3d3d3; 
 
-    tbody tr:hover {
-      background-color: #383a40;
-    }
+      font-family: Arial, sans-serif; 
 
-    #time-display {
-      font-size: 32px;
-      text-transform: uppercase;
-      color: #c0c0c0;
-      background-color: #42444a;
-      padding: 12px 0;
-      margin-top: auto;
-      width: 100%;
-      font-weight: normal;
-    }
-  </style>
-</head>
-<body>
+      margin: 0; 
 
-  <h1 id="header-title">Первая Смена</h1>
+      padding: 0; 
 
-  <div id="reload-container">
-    <span id="reload-text">Updating...</span>
-    <button id="fetch">Reload</button>
-  </div>
+      text-align: center; 
 
-  <section id="csvTable">
-    <p>Loading data...</p>
-  </section>
+      display: flex; 
 
-  <div id="time-display">Время: --:--, --.--.----</div>
+      flex-direction: column; 
 
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <script>
-    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTHueh6aJe84zabgRcUtkC0TuHek2zba1Rj_1V7jWM4hp-iEZCl1ZFkNckcFONjIdi2hR4Ike2xXQTt/pub?output=csv";
+      justify-content: space-between; 
 
-    const monthNames = [
-      "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня",
-      "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"
-    ];
+      height: 100vh; 
 
-    function showReloadingText(type) {
-      document.getElementById("reload-text").innerText = type === "manual" ? "Reloading..." : "Updating...";
-      document.getElementById("reload-text").style.display = "block"; 
-    }
+      overflow: hidden; 
 
-    function hideReloadingText() {
-      setTimeout(() => {
-        document.getElementById("reload-text").style.display = "none"; 
-      }, 500);
-    }
+    } 
 
-    async function loadCsv(type) {
-      try {
-        showReloadingText(type);
+ 
 
-        const response = await fetch(`${csvUrl}&_=${new Date().getTime()}`); 
-        if (!response.ok) throw new Error("Network response was not ok: " + response.status);
-        const csvText = await response.text();
-        const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+    h1 { 
 
-        let newTableHtml = generateTable(parsed.data);
-        document.getElementById("csvTable").innerHTML = newTableHtml;
-        updateTime();
-        checkAndUpdateHeader(parsed.data);
+      color: #c0c0c0; 
 
-      } catch (error) {
-        console.error(error);
-      } finally {
-        hideReloadingText();
-      }
-    }
+      font-size: 38px; 
 
-    function generateTable(data) {
-      if (data.length === 0) return "<p>No data found</p>";
+      text-transform: uppercase; 
 
-      let table = `<table><thead><tr>`;
-      let headers = Object.keys(data[0]).filter(col => col !== "Date"); // Exclude Date column
-      headers.forEach(header => table += `<th>${header}</th>`);
-      table += `</tr></thead><tbody>`;
+      background-color: #42444a; 
 
-      data.forEach(row => {
-        table += `<tr>`;
-        headers.forEach(col => {
-          table += `<td>${row[col]}</td>`;
-        });
-        table += `</tr>`;
-      });
+      padding: 12px 0; 
 
-      table += `</tbody></table>`;
-      return table;
-    }
+      margin: 0; 
 
-    function checkAndUpdateHeader(data) {
-      if (data.length === 0) return;
+      width: 100%; 
 
-      let lastValidDate = null;
+      font-weight: normal; 
 
-      for (let i = data.length - 1; i >= 0; i--) {
-        let row = data[i];
-        let dateCell = row["Date"]; // Directly accessing "Date" column
+    } 
 
-        if (dateCell && /^\d{1,2}-\d{1,2}-\d{4}$/.test(dateCell) && dateCell !== "0-0-0") {
-          lastValidDate = dateCell;
-          break;
-        }
-      }
+ 
 
-      if (lastValidDate) {
-        let [sheetDay, sheetMonth, sheetYear] = lastValidDate.split('-').map(num => parseInt(num, 10));
-        let today = new Date();
-        let currentDay = today.getDate();
-        let currentMonth = today.getMonth() + 1;
-        let currentYear = today.getFullYear();
+    #reload-container { 
 
-        if (sheetDay !== currentDay || sheetMonth !== currentMonth || sheetYear !== currentYear) {
-          let formattedDate = `${sheetDay} ${monthNames[sheetMonth - 1]}`;
-          document.getElementById("header-title").innerText = `Первая Смена (${formattedDate})`;
-        } else {
-          document.getElementById("header-title").innerText = "Первая Смена";
-        }
-      }
-    }
+      position: absolute; 
 
-    function updateTime() {
-      let now = new Date();
-      let formattedTime = `ВРЕМЯ: ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}, ${now.getDate().toString().padStart(2, '0')}.${(now.getMonth() + 1).toString().padStart(2, '0')}.${now.getFullYear()}`;
-      document.getElementById("time-display").innerText = formattedTime;
-    }
+      top: 15px; 
 
-    window.addEventListener('DOMContentLoaded', () => loadCsv("auto"));
-    document.getElementById('fetch').addEventListener('click', () => loadCsv("manual"));
-    setInterval(() => loadCsv("auto"), 300000);
-  </script>
+      right: 20px; 
 
-</body>
-</html>
+      display: flex; 
+
+      align-items: center; 
+
+    } 
+
+ 
+
+    #reload-text { 
+
+      color: #d3d3d3; 
+
+      font-size: 18px; 
+
+      margin-right: 10px; 
+
+      display: none; 
+
+    } 
+
+ 
+
+    #fetch { 
+
+      background-color: #2e2f33; 
+
+      color: #d3d3d3; 
+
+      border: 1px solid #666; 
+
+      padding: 8px 14px; 
+
+      border-radius: 4px; 
+
+      cursor: pointer; 
+
+      font-size: 18px; 
+
+    } 
+
+ 
+
+    #fetch:hover { 
+
+      background-color: #383a40; 
+
+    } 
+
+ 
+
+    table { 
+
+      width: 100%; 
+
+      border-collapse: collapse; 
+
+      background-color: #292a2d; 
+
+      margin-top: 10px; 
+
+      font-size: 22px; 
+
+      height: 65vh; 
+
+    } 
+
+ 
+
+    th, td { 
+
+      border: 1px solid #555; 
+
+      padding: 18px; 
+
+      text-align: center; 
+
+      color: #d3d3d3; 
+
+      width: 12.5%; 
+
+      font-weight: normal; 
+
+    } 
+
+ 
+
+    th { 
+
+      background-color: #42444a; 
+
+      text-transform: uppercase; 
+
+      font-size: 22px; 
+
+    } 
+
+ 
+
+    tbody tr:nth-child(even) { 
+
+      background-color: #2e2f33; 
+
+    } 
+
+ 
+
+    tbody tr:hover { 
+
+      background-color: #383a40; 
+
+    } 
+
+ 
+
+    .fact-low { 
+
+      color: red; 
+
+    } 
+
+ 
+
+    .fact-high { 
+
+      color: limegreen; 
+
+    } 
+
+ 
+
+    .idle-low { 
+
+      color: limegreen; 
+
+    } 
+
+ 
+
+    .idle-high { 
+
+      color: red; 
+
+    } 
+
+ 
+
+    .return-low { 
+
+      color: limegreen; 
+
+    } 
+
+ 
+
+    .return-high { 
+
+      color: red; 
+
+    } 
+
+ 
+
+    #time-display { 
+
+      font-size: 32px; 
+
+      text-transform: uppercase; 
+
+      color: #c0c0c0; 
+
+      background-color: #42444a; 
+
+      padding: 12px 0; 
+
+      margin-top: auto; 
+
+      width: 100%; 
+
+      font-weight: normal; 
+
+    } 
+
+  </style> 
+
+</head> 
+
+<body> 
+
+ 
+
+  <h1>Первая Смена</h1> 
+
+ 
+
+  <div id="reload-container"> 
+
+    <span id="reload-text">Updating...</span> 
+
+    <button id="fetch">Reload</button> 
+
+  </div> 
+
+ 
+
+  <section id="csvTable"> 
+
+    <p>Loading data...</p> 
+
+  </section> 
+
+ 
+
+  <div id="time-display">Время: --:--, --.--.----</div> 
+
+ 
+
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script> 
+
+  <script> 
+
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTHueh6aJe84zabgRcUtkC0TuHek2zba1Rj_1V7jWM4hp-iEZCl1ZFkNckcFONjIdi2hR4Ike2xXQTt/pub?output=csv"; 
+
+    let lastTableHtml = ""; 
+
+ 
+
+    function showReloadingText(type) { 
+
+      document.getElementById("reload-text").innerText = type === "manual" ? "Reloading..." : "Updating..."; 
+
+      document.getElementById("reload-text").style.display = "block";  
+
+    } 
+
+ 
+
+    function hideReloadingText() { 
+
+      setTimeout(() => { 
+
+        document.getElementById("reload-text").style.display = "none";  
+
+      }, 500); 
+
+    } 
+
+ 
+
+    async function loadCsv(type) { 
+
+      try { 
+
+        showReloadingText(type); 
+
+ 
+
+        const response = await fetch(`${csvUrl}&_=${new Date().getTime()}`);  
+
+        if (!response.ok) throw new Error("Network response was not ok: " + response.status); 
+
+        const csvText = await response.text(); 
+
+        const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true }); 
+
+ 
+
+        let newTableHtml = generateTable(parsed.data); 
+
+        if (newTableHtml) lastTableHtml = newTableHtml; 
+
+        document.getElementById("csvTable").innerHTML = lastTableHtml; 
+
+        updateTime(); 
+
+ 
+
+      } catch (error) { 
+
+        console.error(error); 
+
+      } finally { 
+
+        hideReloadingText(); 
+
+      } 
+
+    } 
+
+ 
+
+    function generateTable(data) { 
+
+      if (data.length === 0) return "<p>No data found</p>"; 
+
+ 
+
+      let table = `<table><thead><tr>`; 
+
+      let headers = [ 
+
+        "ВРЕМЯ", 
+
+        "ДОСТУПНО<br>(МИНУТ)", 
+
+        "ПЛАН<br>(ШТУК)", 
+
+        "ФАКТ<br>(ШТУК)", 
+
+        "ТАКТ<br>(МИНУТ)", 
+
+        "БУФЕР<br>(ШТУК)", 
+
+        "ПРОСТОЙ<br>(МИНУТ)", 
+
+        "ВОЗВРАТ<br>(ШТУК)" 
+
+      ]; 
+
+      headers.forEach(header => table += `<th>${header}</th>`); 
+
+      table += `</tr></thead><tbody>`; 
+
+ 
+
+      data.forEach(row => { 
+
+        table += `<tr>`; 
+
+        let values = Object.values(row); 
+
+        values = values.slice(0, 8); 
+
+ 
+
+        values.forEach((cell, index) => { 
+
+          let cellClass = ""; 
+
+ 
+
+          if (index === 3) { 
+
+            let planValue = parseInt(values[2], 10); 
+
+            let factValue = parseInt(cell, 10); 
+
+            if (!isNaN(planValue) && !isNaN(factValue)) { 
+
+              if (factValue < planValue) cellClass = "fact-low"; 
+
+              else if (factValue > planValue) cellClass = "fact-high"; 
+
+            } 
+
+          } 
+
+ 
+
+          if (index === 6) { 
+
+            let idleValue = parseInt(cell, 10); 
+
+            if (!isNaN(idleValue)) { 
+
+              if (idleValue === 0) cellClass = "idle-low"; 
+
+              else if (idleValue > 5) cellClass = "idle-high"; 
+
+            } 
+
+          } 
+
+ 
+
+          if (index === 7) { 
+
+            let returnValue = parseInt(cell, 10); 
+
+            if (!isNaN(returnValue)) { 
+
+              if (returnValue === 0) cellClass = "return-low"; 
+
+              else if (returnValue >= 3) cellClass = "return-high"; 
+
+            } 
+
+          } 
+
+ 
+
+          table += `<td class="${cellClass}">${cell}</td>`; 
+
+        }); 
+
+ 
+
+        table += `</tr>`; 
+
+      }); 
+
+ 
+
+      table += `</tbody></table>`; 
+
+      return table; 
+
+    } 
+
+ 
+
+    function updateTime() { 
+
+      let now = new Date(); 
+
+      let formattedTime = `ВРЕМЯ: ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}, ${now.getDate().toString().padStart(2, '0')}.${(now.getMonth() + 1).toString().padStart(2, '0')}.${now.getFullYear()}`; 
+
+      document.getElementById("time-display").innerText = formattedTime; 
+
+    } 
+
+ 
+
+    window.addEventListener('DOMContentLoaded', () => loadCsv("auto")); 
+
+    document.getElementById('fetch').addEventListener('click', () => loadCsv("manual")); 
+
+    setInterval(() => loadCsv("auto"), 300000); 
+
+  </script> 
+
+ 
+
+</body> 
+
+</html> 
