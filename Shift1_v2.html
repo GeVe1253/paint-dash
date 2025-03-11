@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 
-  <title>Shift1 Overall</title> 
+  <title>Shift 1 Overall</title> 
 
  
 
@@ -150,7 +150,7 @@
 
       color: #d3d3d3; 
 
-      width: 11.11%; 
+      width: 12.5%; 
 
       font-weight: normal; 
 
@@ -181,6 +181,54 @@
     tbody tr:hover { 
 
       background-color: #383a40; 
+
+    } 
+
+ 
+
+    .fact-low { 
+
+      color: red; 
+
+    } 
+
+ 
+
+    .fact-high { 
+
+      color: limegreen; 
+
+    } 
+
+ 
+
+    .idle-low { 
+
+      color: limegreen; 
+
+    } 
+
+ 
+
+    .idle-high { 
+
+      color: red; 
+
+    } 
+
+ 
+
+    .return-low { 
+
+      color: limegreen; 
+
+    } 
+
+ 
+
+    .return-high { 
+
+      color: red; 
 
     } 
 
@@ -306,11 +354,11 @@
 
         document.getElementById("csvTable").innerHTML = lastTableHtml; 
 
-         
+        updateTime(); 
+
+ 
 
         checkAndUpdateHeader(parsed.data); 
-
-        updateTime(); 
 
  
 
@@ -328,74 +376,6 @@
 
  
 
-    function generateTable(data) { 
-
-      if (data.length === 0) return "<p>No data found</p>"; 
-
- 
-
-      let table = `<table><thead><tr>`; 
-
-      let headers = [ 
-
-        "ВРЕМЯ", 
-
-        "ДОСТУПНО<br>(МИНУТ)", 
-
-        "ПЛАН<br>(ШТУК)", 
-
-        "ФАКТ<br>(ШТУК)", 
-
-        "ТАКТ<br>(МИНУТ)", 
-
-        "БУФЕР<br>(ШТУК)", 
-
-        "ПРОСТОЙ<br>(МИНУТ)", 
-
-        "ВОЗВРАТ<br>(ШТУК)", 
-
-        "DD<br>MM<br>YYYY" 
-
-      ]; 
-
-      headers.forEach(header => table += `<th>${header}</th>`); 
-
-      table += `</tr></thead><tbody>`; 
-
- 
-
-      data.forEach(row => { 
-
-        table += `<tr>`; 
-
-        let values = Object.values(row); 
-
-        values = values.slice(0, 9);  
-
- 
-
-        values.forEach(cell => { 
-
-          table += `<td>${cell}</td>`; 
-
-        }); 
-
- 
-
-        table += `</tr>`; 
-
-      }); 
-
- 
-
-      table += `</tbody></table>`; 
-
-      return table; 
-
-    } 
-
- 
-
     function checkAndUpdateHeader(data) { 
 
       if (data.length === 0) return; 
@@ -404,31 +384,41 @@
 
       let lastRow = data[data.length - 1]; 
 
-      let sheetDate = lastRow[8];  
-
-      let [day, month, year] = sheetDate.split(".").map(Number); 
+      let sheetDateParts = lastRow[8].split('-'); // Column 9 (omitted one) 
 
  
 
-      let today = new Date(); 
+      if (sheetDateParts.length === 3) { 
 
-      let todayDay = today.getDate(); 
+        let sheetDay = parseInt(sheetDateParts[0], 10); 
 
-      let todayMonth = today.getMonth() + 1; 
+        let sheetMonth = parseInt(sheetDateParts[1], 10); 
 
-      let todayYear = today.getFullYear(); 
+        let sheetYear = parseInt(sheetDateParts[2], 10); 
 
  
 
-      if (day !== todayDay || month !== todayMonth || year !== todayYear) { 
+        let today = new Date(); 
 
-        let formattedDate = `${day} ${monthNames[month - 1]}`; 
+        let currentDay = today.getDate(); 
 
-        document.getElementById("header-title").innerText = `ПЕРВАЯ СМЕНА (${formattedDate})`; 
+        let currentMonth = today.getMonth() + 1; 
 
-      } else { 
+        let currentYear = today.getFullYear(); 
 
-        document.getElementById("header-title").innerText = "ПЕРВАЯ СМЕНА"; 
+ 
+
+        if (sheetDay !== currentDay || sheetMonth !== currentMonth || sheetYear !== currentYear) { 
+
+          let formattedDate = `${sheetDay} ${monthNames[sheetMonth - 1]}`; 
+
+          document.getElementById("header-title").innerText = `Первая Смена (${formattedDate})`; 
+
+        } else { 
+
+          document.getElementById("header-title").innerText = "Первая Смена"; 
+
+        } 
 
       } 
 
