@@ -198,6 +198,11 @@
         console.error(error);
       }
     }
+    
+    async function loadInitialCsv() {
+      await loadCsv(1); // Load shift 1 CSV
+      await loadCsv(2); // Load shift 2 CSV
+    }
 
     function updateDisplay(view) {
       if (view === 1 || view === 2) {
@@ -297,6 +302,7 @@
 
     // Start auto-switching when the page loads
     function startPage() {
+      loadInitialCsv();
       startAutoSwitching();
       startCsvReload(); // Start the CSV reloading
     }
