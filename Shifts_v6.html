@@ -1,0 +1,62 @@
+let<div id="nav-container">
+    <button id="prev">&#60;</button>
+    <button id="next">&#62;</button>
+</div>
+
+autoSwitchInterval;
+let manualSwitchTimeout;
+let csvReloadInterval;
+
+// Function to start auto-switching every 10 seconds
+function startAutoSwitching() {
+    clearInterval(autoSwitchInterval);
+    autoSwitchInterval = setInterval(toggleView, 10000); // Auto-switch every 10 seconds
+}
+
+// Function to pause auto-switching when manual switching is done
+function pauseAutoSwitching() {
+    clearInterval(autoSwitchInterval); // Stop auto-switching
+    clearTimeout(manualSwitchTimeout); // Reset any existing timeout
+    manualSwitchTimeout = setTimeout(startAutoSwitching, 60000); // Resume auto-switching after 1 minute
+}
+
+// Function to manually switch between views
+function switchView(direction) {
+    pauseAutoSwitching(); // Pause auto-switching when manually changing views
+    currentView = direction === 1 ? (currentView === 3 ? 1 : currentView + 1) : (currentView === 1 ? 3 : currentView - 1);
+    updateDisplay(currentView);
+}
+
+// Add event listeners for manual switching via buttons and keyboard arrows
+document.getElementById("prev").addEventListener("click", () => switchView(-1)); // Left button (manual switch)
+document.getElementById("next").addEventListener("click", () => switchView(1)); // Right button (manual switch)
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") switchView(-1); // Left arrow key
+    if (event.key === "ArrowRight") switchView(1); // Right arrow key
+});
+
+// Function to toggle between views (auto-switching)
+function toggleView() {
+    currentView = currentView === 3 ? 1 : currentView + 1; // Automatically switch between 1, 2, or 3
+    updateDisplay(currentView);
+}
+
+// Function to reload CSV files
+async function reloadCsvFiles() {
+    await loadCsv(1); // Reload shift 1 CSV
+    await loadCsv(2); // Reload shift 2 CSV
+}
+
+// Start reloading CSV files every 1 minute
+function startCsvReload() {
+    csvReloadInterval = setInterval(reloadCsvFiles, 60000); // Reload CSV every minute (60000 ms)
+}
+
+// Start auto-switching when the page loads
+function startPage() {
+    startAutoSwitching();
+    startCsvReload(); // Start the CSV reloading
+}
+
+startPage(); // Call the startPage function to initialize everything
