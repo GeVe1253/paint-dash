@@ -183,6 +183,9 @@
     let currentView = 1;
     let shiftData = {};
 
+    loadCsv(1); // Load shift 1 CSV
+    loadCsv(2); // Load shift 2 CSV
+
     async function loadCsv(shift) {
       try {
         const response = await fetch(`${shiftUrls[shift]}&_=${new Date().getTime()}`);
@@ -197,11 +200,6 @@
       } catch (error) {
         console.error(error);
       }
-    }
-    
-    async function loadInitialCsv() {
-      await loadCsv(1); // Load shift 1 CSV
-      await loadCsv(2); // Load shift 2 CSV
     }
 
     function updateDisplay(view) {
@@ -302,7 +300,6 @@
 
     // Start auto-switching when the page loads
     function startPage() {
-      loadInitialCsv();
       startAutoSwitching();
       startCsvReload(); // Start the CSV reloading
     }
