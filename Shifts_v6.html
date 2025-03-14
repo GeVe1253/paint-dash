@@ -199,6 +199,7 @@
         shiftData[shift] = parsed;
         if (currentView === shift || currentView === 3) {
           updateDisplay(currentView);
+          document.getElementById("reload-text").style.display = "none";
         }
       } catch (error) {
         console.error(error);
@@ -270,6 +271,12 @@
       currentView = direction === 1 ? (currentView === 3 ? 1 : currentView + 1) : (currentView === 1 ? 3 : currentView - 1);
       updateDisplay(currentView);
     }
+
+    document.getElementById("fetch").addEventListener("click", () => {
+      document.getElementById("reload-text").style.display = "inline";
+        loadCsv(1);
+        loadCsv(2);
+    });
 
     // Add event listeners for manual switching via buttons and keyboard arrows
     document.getElementById("prev").addEventListener("click", () => switchView(-1)); // Left button (manual switch)
