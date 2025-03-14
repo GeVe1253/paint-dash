@@ -297,13 +297,10 @@
       csvReloadInterval = setInterval(reloadCsvFiles, 60000); // Reload CSV every minute (60000 ms)
     }
 
-    // Start auto-switching when the page loads
-    function startPage() {
-      startAutoSwitching();
-      startCsvReload(); // Start the CSV reloading
-    }
+    startAutoSwitching();
+    startCsvReload();
 
-    startPage(); // Call the startPage function to initialize everything
+    
   </script>
 
 </body>
