@@ -231,6 +231,17 @@
       });
       return table + "</tbody></table>";
     }
+    
+    function getColorClass(index, row, cell) {
+      if (index === 3) {
+        let plan = parseInt(row[Object.keys(row)[2]], 10);
+        let fact = parseInt(cell, 10);
+        return fact < plan ? "fact-low" : fact > plan ? "fact-high" : "";
+      }
+      if (index === 6) return parseInt(cell, 10) === 0 ? "idle-low" : "idle-high";
+      if (index === 7) return parseInt(cell, 10) === 0 ? "return-low" : "return-high";
+      return "";
+    }
 
     function updateTime() {
       let now = new Date();
