@@ -52,6 +52,29 @@
       width: 100%;
       font-weight: normal;
     }
+      #nav-container {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #prev, #next {
+      background-color: #42444a;
+      border: 1px solid #666;
+      color: #d3d3d3;
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    #prev:hover, #next:hover {
+      background-color: #505256;
+    }
+
 
     #reload-container {
       position: absolute;
@@ -154,7 +177,12 @@
 <body>
 
   <h1 id="header-title">Первая Смена</h1>
-
+      
+      <div id="nav-container">
+    <button id="prev">&#60;</button>
+    <button id="next">&#62;</button>
+      </div>
+      
   <div id="reload-container">
     <span id="reload-text">Updating...</span>
     <button id="fetch">Reload</button>
@@ -240,30 +268,9 @@
       let now = new Date();
       document.getElementById("time-display").innerText = `ВРЕМЯ: ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} ${now.getDate().toString().padStart(2, '0')}.${(now.getMonth() + 1).toString().padStart(2, '0')}.${now.getFullYear()}`;
     }
-
-    function toggleView() {
-      currentView = currentView === 3 ? 1 : currentView + 1;
-      updateDisplay(currentView);
-    }
-
-    loadCsv(1);
-    loadCsv(2);
-    setInterval(toggleView, 10000);
-  </script>
-
-</body>
-</html>
-
-
-
-let<div id="nav-container">
-    <button id="prev">&#60;</button>
-    <button id="next">&#62;</button>
-</div>
-
-autoSwitchInterval;
-let manualSwitchTimeout;
-let csvReloadInterval;
+        let autoSwitchInterval;
+        let manualSwitchTimeout;
+        let csvReloadInterval;
 
 // Function to start auto-switching every 10 seconds
 function startAutoSwitching() {
@@ -318,3 +325,8 @@ function startPage() {
 }
 
 startPage(); // Call the startPage function to initialize everything
+
+
+</body>
+</html>
+
