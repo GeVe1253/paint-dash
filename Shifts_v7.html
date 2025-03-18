@@ -285,7 +285,6 @@
         loadCsv(2);
     });
 
-    // Add event listeners for manual switching via buttons and keyboard arrows
     document.getElementById("prev").addEventListener("click", () => switchView(-1)); // Left button (manual switch)
     document.getElementById("next").addEventListener("click", () => switchView(1)); // Right button (manual switch)
 
@@ -294,7 +293,6 @@
       if (event.key === "ArrowRight") switchView(1); // Right arrow key
     });
 
-    // Function to toggle between views (auto-switching)
     function toggleView() {
       currentView = currentView === 3 ? 1 : currentView + 1; // Automatically switch between 1, 2, or 3
       updateDisplay(currentView);
@@ -306,7 +304,7 @@
       await loadCsv(2); // Reload shift 2 CSV
     }
 
-    // Start reloading CSV files every 1 minute
+    // Start reloading CSV files
     function startCsvReload() {
       csvReloadInterval = setInterval(reloadCsvFiles, 60000); // Reload CSV every minute (60000 ms)
     }
