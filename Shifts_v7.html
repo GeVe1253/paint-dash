@@ -207,8 +207,6 @@
     }
 
     function updateDisplay(view) {
-      updateTitle(shiftData[shift], shift);
-      updateTime();
       if (view === 1 || view === 2) {
         document.getElementById("header-title").innerText = `${view === 1 ? "ПЕРВАЯ СМЕНА" : "ВТОРАЯ СМЕНА"}`;
         document.getElementById("csvTable").innerHTML = generateTable(shiftData[view], false);
@@ -220,6 +218,8 @@
             ${generateTable(shiftData[2], true)}
           </div>`;
       }
+      updateTitle(shiftData[view], view);
+      updateTime();
     }
 
     function generateTable(data, isBothShifts) {
