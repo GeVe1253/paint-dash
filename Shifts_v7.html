@@ -248,10 +248,10 @@
       return "";
     }
     
-    function updateTitle(data, shift) {
+    function updateTitle(data, view) {
       const day = data[0]["Date"]?.padStart(2, "0");
       const month = data[1]["Date"]?.padStart(2, "0");
-      document.getElementById("header-title").innerText = `${shift === 1 ? "ПЕРВАЯ СМЕНА" : "ВТОРАЯ СМЕНА"} (${parseInt(day)} ${monthNames[parseInt(month)]})`;
+      document.getElementById("header-title").innerText = `${view === 1 ? "ПЕРВАЯ СМЕНА" : "ВТОРАЯ СМЕНА"} (${parseInt(day)} ${monthNames[parseInt(month)]})`;
     }
     
     function updateTime() {
