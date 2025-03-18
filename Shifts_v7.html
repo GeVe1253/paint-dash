@@ -207,6 +207,8 @@
     }
 
     function updateDisplay(view) {
+      updateTitle(shiftData[shift], shift);
+      updateTime();
       if (view === 1 || view === 2) {
         document.getElementById("header-title").innerText = `${view === 1 ? "ПЕРВАЯ СМЕНА" : "ВТОРАЯ СМЕНА"}`;
         document.getElementById("csvTable").innerHTML = generateTable(shiftData[view], false);
@@ -218,7 +220,6 @@
             ${generateTable(shiftData[2], true)}
           </div>`;
       }
-      updateTime();
     }
 
     function generateTable(data, isBothShifts) {
@@ -246,7 +247,13 @@
       if (index === 7) return parseInt(cell, 10) === 0 ? "return-low" : "return-high";
       return "";
     }
-
+    
+    function updateTitle(data, shift) {
+      const day = data[0]["Date"]?.padStart(2, "0");
+      const month = data[1]["Date"]?.padStart(2, "0");
+      document.getElementById("header-title").innerText = `${shift === 1 ? "ПЕРВАЯ СМЕНА" : "ВТОРАЯ СМЕНА"} (${parseInt(day)} ${monthNames[parseInt(month)]})`;
+    }
+    
     function updateTime() {
       let now = new Date();
       document.getElementById("time-display").innerText = `ВРЕМЯ: ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} ${now.getDate().toString().padStart(2, '0')}.${(now.getMonth() + 1).toString().padStart(2, '0')}.${now.getFullYear()}`;
