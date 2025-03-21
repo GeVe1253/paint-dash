@@ -281,9 +281,9 @@
       return "";
     }
 
-    function generatePerfomanceTable(data) {
+    function generatePerformanceTable(data) {
       if (!data) return "<p>Loading data...</p>";
-      let table = `<table><thead><tr>${headersPerfomance.map(header => `<th>${header}</th>`).join('')}</tr></thead><tbody>`;
+      let table = `<table><thead><tr>${headersPerformance.map(header => `<th>${header}</th>`).join('')}</tr></thead><tbody>`;
       data.forEach(row => {
         table += "<tr>";
         Object.values(row).slice(0, 10).forEach((cell, index) => {
