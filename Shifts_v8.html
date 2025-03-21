@@ -180,7 +180,8 @@
 
     const monthNames = ["", "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"];
     const headers = ["ВРЕМЯ", "ДОСТУПНО<br>(МИНУТ)", "ПЛАН<br>(КУЗОВОВ)", "ФАКТ<br>(КУЗОВОВ)", "ТАКТ<br>(МИНУТ)", "БУФЕР<br>(КУЗОВОВ)", "ПРОСТОЙ<br>(МИНУТ)", "ВОЗВРАТ<br>(КУЗОВОВ)"];
-
+    const headersPerfomance = ["СМЕНА", "ПЛАН<br>(КУЗОВОВ)", "ФАКТ<br>(КУЗОВОВ)", "ВЫПОЛНЕНИЕ<br>ПЛАНА(%)", "ПРЯМОЙ СХОД<br>(КУЗОВОВ)", "ПРЯМОЙ СХОД<br>STR(%)", "ГРУНТ<br>(КУЗОВОВ)", "БАЗА<br>(КУЗОВОВ)", "ОБОРУДОВАНИЕ<br>STR(%)"];
+    
     let currentView = 1;
     let shiftData = {};
     let perfomanceData = [];
@@ -273,7 +274,7 @@
 
     function generatePerfomanceTable(data) {
       if (!data) return "<p>Loading data...</p>";
-      let table = `<table><thead><tr>${headers.map(header => `<th>${header}</th>`).join('')}</tr></thead><tbody>`;
+      let table = `<table><thead><tr>${headersPerfomance.map(header => `<th>${header}</th>`).join('')}</tr></thead><tbody>`;
       data.forEach(row => {
         table += "<tr>";
         Object.values(row).slice(0, 10).forEach((cell, index) => {
@@ -306,11 +307,11 @@
       autoSwitchInterval = setInterval(toggleView, 10000);
     }
 
-    // Temporarily pause auto-switching when manual switching is done
+    // Temporarily pause auto-switching after manual switching
     function pauseAutoSwitching() {
       clearInterval(autoSwitchInterval); // Stop auto-switching
       clearTimeout(manualSwitchTimeout); // Reset any existing timeout
-      manualSwitchTimeout = setTimeout(startAutoSwitching, 60000); // Resume auto-switching after 1 minute
+      manualSwitchTimeout = setTimeout(startAutoSwitching, 60000);
     }
 
     // Function to manually switch between views
