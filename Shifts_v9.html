@@ -229,6 +229,28 @@
       }
     }
 
+    function updatePerformanceMetrics(view) {
+      if (!perfomanceData || perfomanceData.length < 3) {
+        document.getElementById("performance-metrics").innerHTML = "";
+      return;
+      }
+      let metrics;
+      if (view === 1) {
+        metrics = perfomanceData[1]; // row 2 (F2 and J2) for shift 1
+      } else if (view === 2) {
+        metrics = perfomanceData[2]; // row 3 (F3 and J3) for shift 2
+      } else {
+        // For other views, clear the metrics
+        document.getElementById("performance-metrics").innerHTML = "";
+        return;
+      }
+      let strValue = metrics["STR"] || "";
+      let oeeValue = metrics["OEE"] || "";
+      document.getElementById("performance-metrics").innerHTML = 
+        `STR: ${strValue}<br>OEE: ${oeeValue}`;
+    }
+
+    
     function updateDisplay(view) {
       if (view === 1 || view === 2) {
         document.getElementById("header-title").innerText = `${view === 1 ? "ПЕРВАЯ СМЕНА" : "ВТОРАЯ СМЕНА"}`;
@@ -303,27 +325,6 @@
       const day = data[0]["Date"]?.padStart(2, "0");
       const month = data[1]["Date"]?.padStart(2, "0");
       document.getElementById("header-title").innerText = `ПОКАЗАТЕЛИ (${parseInt(day)} ${monthNames[parseInt(month)]})`;
-    }
-
-    function updatePerformanceMetrics(view) {
-      if (!perfomanceData || perfomanceData.length < 3) {
-        document.getElementById("performance-metrics").innerHTML = "";
-      return;
-      }
-      let metrics;
-      if (view === 1) {
-        metrics = perfomanceData[1]; // row 2 (F2 and J2) for shift 1
-      } else if (view === 2) {
-        metrics = perfomanceData[2]; // row 3 (F3 and J3) for shift 2
-      } else {
-        // For other views, clear the metrics
-        document.getElementById("performance-metrics").innerHTML = "";
-        return;
-      }
-      let strValue = metrics["STR"] || "";
-      let oeeValue = metrics["OEE"] || "";
-      document.getElementById("performance-metrics").innerHTML = 
-        `STR: ${strValue}<br>OEE: ${oeeValue}`;
     }
     
     function updateTime() {
