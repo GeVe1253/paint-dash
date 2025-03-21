@@ -116,11 +116,11 @@
     th {
       background-color: #42444a;
       text-transform: uppercase;
-      font-size: 22px;
+      font-size: 16px;
     }
 
-    .small-header th {
-      font-size: 16px !important; /* Smaller text size for "ОБЕ СМЕНЫ" */
+    .large-header th {
+      font-size: 22px !important; /* Smaller text size for "ОБЕ СМЕНЫ" */
       padding: 2px;
     }
 
@@ -248,7 +248,7 @@
 
     function generateTable(data, isBothShifts) {
       if (!data) return "<p>Loading data...</p>";
-      let tableClass = isBothShifts ? "small-header" : "";
+      let tableClass != isBothShifts ? "large-header" : "";
       let table = `<table class="${tableClass}"><thead><tr>${headers.map(header => `<th>${header}</th>`).join('')}</tr></thead><tbody>`;
       data.forEach(row => {
         table += "<tr>";
