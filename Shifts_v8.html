@@ -295,13 +295,20 @@
       document.getElementById("time-display").innerText = `ВРЕМЯ: ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} ${now.getDate().toString().padStart(2, '0')}.${(now.getMonth() + 1).toString().padStart(2, '0')}.${now.getFullYear()}`;
     }
 
-    // Function to start auto-switching every 10 seconds
+    document.getElementById("fetch").addEventListener("click", () => {
+      document.getElementById("reload-text").style.display = "inline";
+        loadCsv(1);
+        loadCsv(2);
+    });
+
+
+    
     function startAutoSwitching() {
       clearInterval(autoSwitchInterval);
-      autoSwitchInterval = setInterval(toggleView, 10000); // Auto-switch every 10 seconds
+      autoSwitchInterval = setInterval(toggleView, 10000);
     }
 
-    // Function to pause auto-switching when manual switching is done
+    // Temporarily pause auto-switching when manual switching is done
     function pauseAutoSwitching() {
       clearInterval(autoSwitchInterval); // Stop auto-switching
       clearTimeout(manualSwitchTimeout); // Reset any existing timeout
@@ -310,16 +317,10 @@
 
     // Function to manually switch between views
     function switchView(direction) {
-      pauseAutoSwitching(); // Pause auto-switching when manually changing views
+      pauseAutoSwitching();
       currentView = direction === 1 ? (currentView === 4 ? 1 : currentView + 1) : (currentView === 1 ? 4 : currentView - 1);
       updateDisplay(currentView);
     }
-
-    document.getElementById("fetch").addEventListener("click", () => {
-      document.getElementById("reload-text").style.display = "inline";
-        loadCsv(1);
-        loadCsv(2);
-    });
 
     document.getElementById("prev").addEventListener("click", () => switchView(-1)); // Left button (manual switch)
     document.getElementById("next").addEventListener("click", () => switchView(1)); // Right button (manual switch)
@@ -330,7 +331,7 @@
     });
 
     function toggleView() {
-      currentView = currentView === 4 ? 1 : currentView + 1; // Automatically switch between 1, 2, 3, or 4
+      currentView = currentView === 4 ? 1 : currentView + 1;
       updateDisplay(currentView);
     }
 
@@ -344,7 +345,7 @@
 
     // Start reloading CSV files
     function startCsvReload() {
-      csvReloadInterval = setInterval(reloadCsvFiles, 300000); // Reload CSV every 5 minutes
+      csvReloadInterval = setInterval(reloadCsvFiles, 300000);
     }
 
     startAutoSwitching();
