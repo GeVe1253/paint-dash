@@ -33,7 +33,7 @@
     #nav-container {
       position: absolute;
       top: 15px;
-      left: 20px;
+      left: 10px;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -56,7 +56,7 @@
     #reload-container {
       position: absolute;
       top: 15px;
-      left: 120px;
+      left: 110px;
       display: flex;
       align-items: center;
     }
@@ -239,7 +239,7 @@
           </div>`;
       } else {
         document.getElementById("header-title").innerText = "ПОКАЗАТЕЛИ";
-        document.getElementById("csvTable").innerHTML = generateTable(perfomanceData, false);
+        document.getElementById("csvTable").innerHTML = generatePerfomanceTable(perfomanceData, false);
       }
       updateTitle(shiftData[view], view);
       updateTime();
@@ -269,6 +269,19 @@
       if (index === 6) return parseInt(cell, 10) === 0 ? "idle-low" : "idle-high";
       if (index === 7) return parseInt(cell, 10) === 0 ? "return-low" : "return-high";
       return "";
+    }
+
+    function generatePerfomanceTable(data) {
+      if (!data) return "<p>Loading data...</p>";
+      let table = `<table class="${tableClass}"><thead><tr>${headers.map(header => `<th>${header}</th>`).join('')}</tr></thead><tbody>`;
+      data.forEach(row => {
+        table += "<tr>";
+        Object.values(row).slice(0, 9).forEach((cell, index) => {
+          table += `<td>${cell}</td>`
+        });
+        table += "</tr>";
+      });
+      return table + "</tbody></table>";
     }
     
     function updateTitle(data, view) {
