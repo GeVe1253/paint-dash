@@ -276,7 +276,7 @@
       let table = `<table><thead><tr>${headers.map(header => `<th>${header}</th>`).join('')}</tr></thead><tbody>`;
       data.forEach(row => {
         table += "<tr>";
-        Object.values(row).slice(0, 9).forEach((cell, index) => {
+        Object.values(row).slice(0, 10).forEach((cell, index) => {
           table += `<td>${cell}</td>`
         });
         table += "</tr>";
@@ -322,7 +322,6 @@
 
     document.getElementById("prev").addEventListener("click", () => switchView(-1)); // Left button (manual switch)
     document.getElementById("next").addEventListener("click", () => switchView(1)); // Right button (manual switch)
-
     document.addEventListener("keydown", (event) => {
       if (event.key === "ArrowLeft") switchView(-1); // Left arrow key
       if (event.key === "ArrowRight") switchView(1); // Right arrow key
