@@ -318,14 +318,15 @@
       // For other views, clear the metrics
       document.getElementById("performance-metrics").innerHTML = "";
     return;
+    }
+      
+    let strValue = metrics["STR"] || "";
+    let oeeValue = metrics["OEE"] || "";
+
+      
+    document.getElementById("performance-metrics").innerHTML = 
+      STR: ${strValue}%<br>OEE: ${oeeValue}%`;
   }
-  
-  let strValue = metrics["STR"] || "";
-  let oeeValue = metrics["OEE"] || "";
-  
-  document.getElementById("performance-metrics").innerHTML = 
-    `STR: ${strValue}%<br>OEE: ${oeeValue}%`;
-}
     
     function updateTime() {
       let now = new Date();
