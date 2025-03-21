@@ -273,7 +273,7 @@
 
     function generatePerfomanceTable(data) {
       if (!data) return "<p>Loading data...</p>";
-      let table = `<table class="${tableClass}"><thead><tr>${headers.map(header => `<th>${header}</th>`).join('')}</tr></thead><tbody>`;
+      let table = `<table><thead><tr>${headers.map(header => `<th>${header}</th>`).join('')}</tr></thead><tbody>`;
       data.forEach(row => {
         table += "<tr>";
         Object.values(row).slice(0, 9).forEach((cell, index) => {
