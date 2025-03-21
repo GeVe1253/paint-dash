@@ -212,14 +212,14 @@
       }
     }
     
-    async function loadPerfomanceCsv() {
+    async function loadPerformanceCsv() {
       try {
-        const response = await fetch(`${perfomanceUrl}&_=${new Date().getTime()}`);
+        const response = await fetch(`${performanceUrl}&_=${new Date().getTime()}`);
         if (!response.ok) throw new Error("Network response was not ok: " + response.status);
         const csvText = await response.text();
         const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true }).data;
 
-        perfomanceData = parsed;
+        performanceData = parsed;
         if (currentView === 4) {
           updateDisplay(currentView);
           document.getElementById("reload-text").style.display = "none";
