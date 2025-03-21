@@ -186,14 +186,14 @@
     
     let currentView = 1;
     let shiftData = {};
-    let perfomanceData = [];
+    let performanceData = [];
     let autoSwitchInterval;
     let manualSwitchTimeout;
     let csvReloadInterval;
 
     loadCsv(1); // Load shift 1 CSV
     loadCsv(2); // Load shift 2 CSV
-    loadPerfomanceCsv();
+    loadPerformanceCsv();
 
     async function loadCsv(shift) {
       try {
