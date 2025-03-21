@@ -195,7 +195,7 @@
 
     async function loadCsv(shift) {
       try {
-        const response = await fetch(`${shiftUrls[shift]}&_=${new Date().getTime()}`);
+        const response = await fetch(`${shiftUrls[shift]}&_=${new Date().getTime()}`, { cache: 'no-cache' });
         if (!response.ok) throw new Error("Network response was not ok: " + response.status);
         const csvText = await response.text();
         const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true }).data;
