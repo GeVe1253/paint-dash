@@ -74,17 +74,17 @@
     #fetch:hover {
       background-color: #505256;
     }
-
-    .table-container {
-      display: flex;
-      justify-content: center;
-      width: 100%;
-    }
-
+    
     #reload-text {
       font-size: 18px;
       margin-left: 10px;
       display: none;
+    }
+    
+    .table-container {
+      display: flex;
+      justify-content: center;
+      width: 100%;
     }
 
     table {
@@ -336,8 +336,10 @@
 
     // Function to reload CSV files
     async function reloadCsvFiles() {
+      document.getElementById("reload-text").style.display = "inline";
       await loadCsv(1); // Reload shift 1 CSV
       await loadCsv(2); // Reload shift 2 CSV
+      await loadPerfomanceCsv();
     }
 
     // Start reloading CSV files
