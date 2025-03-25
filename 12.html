@@ -236,7 +236,7 @@
     }
     
     function updateDisplay(view) {
-      updateTitle(data, view)
+      updateTitle(view)
       updatePerformanceMetrics(view);
       updateTime();
       
@@ -327,7 +327,13 @@
       return "";
     }
 
-    function updateTitle(data, view) {
+    function updateTitle(view) {
+      let data;
+      if (view === 4) {
+        data = performanceData;
+      } else {
+        data = shiftData[view];
+      }
       const rawDay = data?.[0]?.["Date"];
       const rawMonth = data?.[1]?.["Date"];
       if (!rawDay || !rawMonth) return;
