@@ -230,6 +230,9 @@
     }
     
     function updateDisplay(view) {
+      updatePerformanceMetrics(view);
+      updateTime();
+      
       if (view === 1 || view === 2) {
         document.getElementById("header-title").innerText = `${view === 1 ? "ПЕРВАЯ СМЕНА" : "ВТОРАЯ СМЕНА"}`;
         document.getElementById("csvTable").innerHTML = generateTable(shiftData[view], false);
@@ -250,9 +253,6 @@
       } else {
         updateTitle(shiftData[view], view);
       }
-      
-      updatePerformanceMetrics(view);
-      updateTime();
     }
 
     function generateTable(data, isBothShifts) {
