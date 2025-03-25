@@ -1,16 +1,23 @@
-function toggleView() {
-  let nextView = currentView === 4 ? 1 : currentView + 1;
-
-  // Skip view 2 between 07:00–16:59
-  if (new Date().getHours() >= 7 && new Date().getHours() <= 16 && nextView === 2) {
-    nextView = 3;
+function getColorClass(index, row, cell) {
+  if (index === 3) {
+    let plan = parseInt(row[Object.keys(row)[2]], 10);
+    let fact = parseInt(cell, 10);
+    return fact < (plan - 1) ? "fact-low" : fact > plan ? "fact-high" : "";
   }
 
-  // Skip view 1 outside 07:00–16:59
-  if ((new Date().getHours() < 7 || new Date().getHours() > 16) && nextView === 1) {
-    nextView = 2;
+  if (index === 6) {
+    let idle = parseInt(cell, 10);
+    if (idle === 0) return "idle-low";
+    if (idle > 5) return "idle-high";
+    return ""; // For idle between 1 and 5
   }
 
-  currentView = nextView;
-  updateDisplay(currentView);
+  if (index === 7) {
+    let ret = parseInt(cell, 10);
+    if (ret === 0) return "return-low";
+    if (ret > 1) return "return-high";
+    return ""; // For return = 1
+  }
+
+  return "";
 }
