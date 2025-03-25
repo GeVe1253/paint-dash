@@ -334,8 +334,8 @@
       } else {
         data = shiftData[view];
       }
-      const rawDay = data?.[0]?.["Date"];
-      const rawMonth = data?.[1]?.["Date"];
+      const rawDay = data[0]?.["Date"];
+      const rawMonth = data[1]?.["Date"];
       if (!rawDay || !rawMonth) return;
       const day = rawDay.padStart(2, "0");
       const month = rawMonth.padStart(2, "0");
