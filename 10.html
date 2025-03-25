@@ -367,7 +367,16 @@
     });
 
     function toggleView() {
-      currentView = currentView === 4 ? 1 : currentView + 1;
+      let nextView = currentView === 4 ? 1 : currentView + 1;
+      // Skip view 2 between 07:00–16:59
+      if (new Date().getHours() >= 7 && new Date().getHours() <= 16 && nextView === 2) {
+        nextView = 3;
+      }
+      // Skip view 1 outside 07:00–16:59
+      if ((new Date().getHours() < 7 || new Date().getHours() > 16) && nextView === 1) {
+        nextView = 2;
+      }
+      currentView = nextView;
       updateDisplay(currentView);
     }
 
