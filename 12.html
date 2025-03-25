@@ -333,7 +333,7 @@
     }
     
     function updateTitle(data, view) {
-      if (!=data || !data[0]?.Date || !data[1]?.Date) return;
+      if (!data || !data[0]?.Date || !data[1]?.Date) return;
       const day = data[0]["Date"].padStart(2, "0");
       const month = data[1]["Date"].padStart(2, "0");
       document.getElementById("header-title").innerText = `${view === 1 ? "ПЕРВАЯ СМЕНА" : "ВТОРАЯ СМЕНА"} (${parseInt(day)} ${monthNames[parseInt(month)]})`;
