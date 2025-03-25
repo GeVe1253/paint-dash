@@ -306,7 +306,7 @@
       data.forEach(row => {
         table += "<tr>";
         Object.values(row).slice(0, 10).forEach((cell, index) => {
-          let cellClass = getPerformanceColorClass(index, row, cell);
+          let cellClass = getPerformanceColorClass(index, cell);
           table += `<td class="${cellClass}">${cell}</td>`;
         });
         table += "</tr>";
