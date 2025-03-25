@@ -236,6 +236,7 @@
     }
     
     function updateDisplay(view) {
+      updateTitle(data, view)
       updatePerformanceMetrics(view);
       updateTime();
       
@@ -252,12 +253,6 @@
       } else {
         document.getElementById("header-title").innerText = "ПОКАЗАТЕЛИ";
         document.getElementById("csvTable").innerHTML = generatePerformanceTable(performanceData, false);
-      }
-      
-      if (view === 4){
-        updatePerformanceTitle(performanceData);
-      } else {
-        updateTitle(shiftData[view], view);
       }
     }
 
@@ -331,18 +326,27 @@
       }
       return "";
     }
-    
-    function updateTitle(data, view) {
-      const day = data[0]["Date"]?.padStart(2, "0");
-      const month = data[1]["Date"]?.padStart(2, "0");
-      document.getElementById("header-title").innerText = `${view === 1 ? "ПЕРВАЯ СМЕНА" : "ВТОРАЯ СМЕНА"} (${parseInt(day)} ${monthNames[parseInt(month)]})`;
-    }
-    function updatePerformanceTitle(data, view) {
-      const day = data[0]["Date"]?.padStart(2, "0");
-      const month = data[1]["Date"]?.padStart(2, "0");
-      document.getElementById("header-title").innerText = `ПОКАЗАТЕЛИ (${parseInt(day)} ${monthNames[parseInt(month)]})`;
-    }
 
+    function updateTitle(data, view) {
+      const rawDay = data?.[0]?.["Date"];
+      const rawMonth = data?.[1]?.["Date"];
+      if (!rawDay || !rawMonth) return;
+      const day = rawDay.padStart(2, "0");
+      const month = rawMonth.padStart(2, "0");
+      const dayNum = parseInt(day, 10);
+      const monthName = monthNames[parseInt(month, 10)];
+      let title = "";
+      if (view === 1) {
+        title = "ПЕРВАЯ СМЕНА";
+      } else if (view === 2) {
+        title = "ВТОРАЯ СМЕНА";
+      } else if (view === 3) {
+        title = "ОБЕ СМЕНЫ";
+      } else if (view === 4) {
+        title = "ПОКАЗАТЕЛИ";
+      }
+      document.getElementById("header-title").innerText = `${title} (${dayNum} ${monthName})`;
+    }
         
     function updatePerformanceMetrics(view) {
       if (!performanceData || performanceData.length < 3) {
