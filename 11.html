@@ -134,10 +134,16 @@
 
     .fact-low { color: red; }
     .fact-high { color: limegreen; }
+    .str-low { color: red; }
+    .str-high { color: limegreen; }
+    .oee-low { color: red; }
+    .oee-high { color: limegreen; }
+    
     .idle-low { color: limegreen; }
     .idle-high { color: red; }
     .return-low { color: limegreen; }
     .return-high { color: red; }
+
 
     #time-display {
       font-size: 32px;
@@ -300,11 +306,30 @@
       data.forEach(row => {
         table += "<tr>";
         Object.values(row).slice(0, 10).forEach((cell, index) => {
-          table += `<td>${cell}</td>`
+          let cellClass = getColorClass(index, row, cell);
+          table += `<td class="${cellClass}">${cell}</td>`;
         });
         table += "</tr>";
       });
       return table + "</tbody></table>";
+    }
+    
+    function getPerformanceColorClass(index, cell) {
+      let value = parseFloat(cell.replace('%', '').replace(',', '.'));
+      if (isNaN(value)) return ""; // Handle invalid or missing percentages
+      if (index === 3) { // Plan Fulfillment
+        if (value >= 90) return "fact-high";
+        if (value < 80) return "fact-low";
+      }
+      if (index === 5) { // STR
+        if (value >= 75) return "str-high";
+        if (value < 65) return "str-low";
+      }
+      if (index === 9) { // OEE
+        if (value >= 90) return "oee-high";
+        if (value < 75) return "oee-low";
+      }
+      return "";
     }
     
     function updateTitle(data, view) {
