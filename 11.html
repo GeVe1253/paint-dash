@@ -315,7 +315,7 @@
     }
     
     function getPerformanceColorClass(index, cell) {
-      let value = parseFloat(cell.replace('%', '').replace(',', '.'));
+      let value = parseFloat(String(cell).replace('%', '').replace(',', '.'));
       if (isNaN(value)) return ""; // Handle invalid or missing percentages
       if (index === 3) { // Plan Fulfillment
         if (value >= 90) return "fact-high";
