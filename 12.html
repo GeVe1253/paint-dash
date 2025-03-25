@@ -339,8 +339,6 @@
       if (!rawDay || !rawMonth) return;
       const day = rawDay.padStart(2, "0");
       const month = rawMonth.padStart(2, "0");
-      const dayNum = parseInt(day, 10);
-      const monthName = monthNames[parseInt(month, 10)];
       let title = "";
       if (view === 1) {
         title = "ПЕРВАЯ СМЕНА";
@@ -351,7 +349,7 @@
       } else if (view === 4) {
         title = "ПОКАЗАТЕЛИ";
       }
-      document.getElementById("header-title").innerText = `${title} (${dayNum} ${monthName})`;
+      document.getElementById("header-title").innerText = `${title} (${parseInt(day)} ${monthNames[parseInt(month)]})`;
     }
         
     function updatePerformanceMetrics(view) {
