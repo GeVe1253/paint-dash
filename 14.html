@@ -283,16 +283,17 @@
     }
 
     function getColorClass(index, row, cell) {
-      if (isNaN(cell)) return "";
-      
       if (index === 3) {
         let plan = parseInt(row[Object.keys(row)[2]], 10);
         let fact = parseInt(cell, 10);
+        if (isNaN(plan)) return "";
+        if (isNaN(fact)) return "";
         return fact < (plan - 1) ? "fact-low" : "fact-high";
     }
 
     if (index === 6) {
       let idle = parseInt(cell, 10);
+      if (isNaN(idle)) return "";
       if (idle <= 5) return "idle-low";
       if (idle > 5) return "idle-high";
       return "";
@@ -300,6 +301,7 @@
 
     if (index === 7) {
       let ret = parseInt(cell, 10);
+      if (isNaN(ret)) return "";
       if (ret <= 1) return "return-low";
       if (ret > 1) return "return-high";
       return "";
