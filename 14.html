@@ -221,6 +221,7 @@
     }
     
     async function loadPerformanceCsv() {
+      let reloadCountdown = setTimeout(() => location.reload(), 60000);
       try {
         const response = await fetch(`${performanceUrl}&_=${new Date().getTime()}`);
         if (!response.ok) throw new Error("Network response was not ok: " + response.status);
@@ -228,12 +229,14 @@
         const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true }).data;
 
         performanceData = parsed;
+        clearTimeout (reloadCountdown)
         if (currentView === 4) {
           updateDisplay(currentView);
           document.getElementById("reload-text").style.display = "none";
         }
       } catch (error) {
         console.error(error);
+        setTimeout(() => location.reload(), 60000);
       }
     }
     
