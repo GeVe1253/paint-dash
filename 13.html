@@ -241,7 +241,7 @@
       updateTime();
       
       if (view === 1 || view === 2) {
-        document.getElementById("header-title").innerText = `${view === 1 ? "ПЕРВАЯ СМЕНА" : "ВТОРАЯ СМЕНА"}`;
+        document.getElementById("header-title").innerText = `${view === 1 ? "ДНЕВНАЯ СМЕНА" : "НОЧНАЯ СМЕНА"}`;
         document.getElementById("csvTable").innerHTML = generateTable(shiftData[view], false);
       } else if (view === 3) {
         document.getElementById("header-title").innerText = "ОБЕ СМЕНЫ";
@@ -338,7 +338,7 @@
       if (!data || !data[0]?.Date || !data[1]?.Date) return;
       const day = data[0]["Date"].padStart(2, "0");
       const month = data[1]["Date"].padStart(2, "0");
-      document.getElementById("header-title").innerText = `${view === 1 ? "ПЕРВАЯ СМЕНА" : "ВТОРАЯ СМЕНА"} (${parseInt(day)} ${monthNames[parseInt(month)]})`;
+      document.getElementById("header-title").innerText = `${view === 1 ? "ДНЕВНАЯ СМЕНА" : "НОЧНАЯ СМЕНА"} (${parseInt(day)} ${monthNames[parseInt(month)]})`;
     }
     function updatePerformanceTitle(data, view) {
       const day = data[0]["Date"]?.padStart(2, "0");
