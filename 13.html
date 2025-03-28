@@ -186,8 +186,9 @@
     const performanceUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTrIa5bWiS29K6mL8CYqZx3JC70f2CMiLIwIi61ey5sVLvUsUzaAEfqZ4Erx1lhAe1q-7kyoRiE3kLJ/pub?output=csv";
 
     const monthNames = ["", "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"];
-    const headers = ["ВРЕМЯ", "ДОСТУПНО<br>(МИНУТ)", "ПЛАН<br>(КУЗОВОВ)", "ФАКТ<br>(КУЗОВОВ)", "ТАКТ<br>(МИНУТ)", "БУФЕР<br>(КУЗОВОВ)", "ПРОСТОЙ<br>(МИНУТ)", "ВОЗВРАТ<br>(КУЗОВОВ)"];
+    const headers = ["ВРЕМЯ", "ДОСТУПНО<br>(МИНУТ)", "ПЛАН<br>(КУЗОВОВ)", "ФАКТ<br>(КУЗОВОВ)", "ТАКТ<br>(МИНУТ)", "НАКОПИТЕЛЬ<br>(КУЗОВОВ)", "ПРОСТОЙ<br>(МИНУТ)", "ВОЗВРАТ<br>(КУЗОВОВ)"];
     const headersPerformance = ["СМЕНА", "ПЛАН<br>(КУЗОВОВ)", "ФАКТ<br>(КУЗОВОВ)", "ВЫПОЛНЕНИЕ<br>ПЛАНА (%)", "ПРЯМОЙ СХОД<br>(КУЗОВОВ)", "ПРЯМОЙ СХОД<br>STR (%)", "ПЕРЕКРАС<br>(КУЗОВОВ)", "ГРУНТ<br>(КУЗОВОВ)", "БАЗА<br>(КУЗОВОВ)", "ОБОРУДОВАНИЕ<br>OEE (%)"];
+    const headersCompact = ["ВРЕМЯ", "ДАНО<br>МИНУТ", "ПЛАН<br>КУЗОВОВ", "ФАКТ<br(КУЗОВОВ", "ТАКТ<br>МИНУТ", "БУФЕР<br>КУЗОВОВ", "ПРОСТОЙ<br>МИНУТ", "ВОЗВРАТ<br>КУЗОВОВ"];
     
     let currentView = 1;
     let shiftData = {};
@@ -263,7 +264,8 @@
     function generateTable(data, isBothShifts) {
       if (!data) return "<p>Loading data...</p>";
       let tableClass = isBothShifts ? "" : "large-header";
-      let table = `<table class="${tableClass}"><thead><tr>${headers.map(header => `<th>${header}</th>`).join('')}</tr></thead><tbody>`;
+      let headersUsed = isBothShifts ? headersCompact : headers;
+      let table = `<table class="${tableClass}"><thead><tr>${headersUsed.map(header => `<th>${header}</th>`).join('')}</tr></thead><tbody>`;
       data.forEach(row => {
         table += "<tr>";
         Object.values(row).slice(0, 8).forEach((cell, index) => {
